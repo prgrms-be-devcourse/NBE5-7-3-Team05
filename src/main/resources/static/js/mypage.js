@@ -71,8 +71,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 오늘의 할 일 목록 불러오기
     try {
-        const today = new Date().toISOString().split("T")[0];
-        const res = await fetch(`/users/${userId}/tasks?date=${today}`, {
+        // const today = new Date().toISOString().split("T")[0];
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const formattedToday = `${yyyy}-${mm}-${dd}`;
+        const res = await fetch(`/users/${userId}/tasks?date=${formattedToday}`, {
             credentials: "include"
         });
 
