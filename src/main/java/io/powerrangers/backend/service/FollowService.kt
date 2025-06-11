@@ -19,7 +19,7 @@ class FollowService(
 
     @Transactional
     fun follow(request: FollowRequestDto): FollowResponseDto {
-        // ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
+        // TODO : ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
         val follower = userRepository.findById(ContextUtil.getCurrentUserId())
             .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
         val following = userRepository.findById(request.followingId)
