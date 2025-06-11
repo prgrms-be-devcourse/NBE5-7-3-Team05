@@ -5,9 +5,9 @@ import io.powerrangers.backend.entity.User
 
 fun User.toUserFollowResponseDto(): UserFollowResponseDto {
     return UserFollowResponseDto(
-        id = this.id,
-        nickname = this.nickname,
-        intro = this.intro,
-        profileImage = this.profileImage,
+        this.id,
+        this.nickname,
+        this.intro,
+        this.profileImage,
     )
 }
