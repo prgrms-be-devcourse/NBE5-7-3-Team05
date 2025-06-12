@@ -4,9 +4,11 @@ import io.powerrangers.backend.dto.BaseResponse
 import io.powerrangers.backend.dto.TaskResponseDto
 import io.powerrangers.backend.dto.UserGetProfileResponseDto
 import io.powerrangers.backend.dto.UserUpdateProfileRequestDto
-import io.powerrangers.backend.service.ContextUtil
-import io.powerrangers.backend.service.CookieFactory
 import io.powerrangers.backend.service.UserService
+import io.powerrangers.backend.utils.REFRESH_TOKEN
+import io.powerrangers.backend.utils.createAccessCookie
+import io.powerrangers.backend.utils.deleteAccessCookie
+import io.powerrangers.backend.utils.deleteRefreshCookie
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -65,8 +67,8 @@ class UserController(
     @PostMapping("/logout")
     fun logoutUser(): ResponseEntity<Void> {
         userService.logout()
-        val deleteAccessCookie = CookieFactory.deleteAccessCookie()
-        val deleteRefreshCookie = CookieFactory.deleteRefreshCookie()
+        val deleteAccessCookie = deleteAccessCookie()
+        val deleteRefreshCookie = deleteRefreshCookie()
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString())
@@ -76,10 +78,10 @@ class UserController(
 
     @PostMapping("/reissue")
     fun reissueToken(
-        @CookieValue(value = CookieFactory.REFRESH_TOKEN) refreshToken: String
+        @CookieValue(value = REFRESH_TOKEN) refreshToken: String
     ): ResponseEntity<String> {
         val newAccessToken = userService.reissueAccessToken(refreshToken)
-        val accessCookie = CookieFactory.createAccessCookie(newAccessToken)
+        val accessCookie = createAccessCookie(newAccessToken)
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
             .build<String>()
@@ -87,7 +89,7 @@ class UserController(
 
     @GetMapping("/me")
     fun getCurrentUserId(): ResponseEntity<BaseResponse<Long>> {
-        val userId = ContextUtil.getCurrentUserId()
+        val userId = getCurrentUserId()
         return BaseResponse.success(HttpStatus.OK, userId)
     }
 
