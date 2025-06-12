@@ -21,9 +21,12 @@ private val log = KotlinLogging.logger {}
 @Service
 class JwtProvider(
     private val tokenRepository: TokenRepository,
-    @Value("\${custom.jwt.validation.access}") private val accessTokenExpiration: Long,
-    @Value("\${custom.jwt.validation.refresh}") private val refreshTokenExpiration: Long,
-    @Value("\${custom.jwt.secrets.app-key}") private val jwtSecret: String
+    @Value("\${custom.jwt.validation.access}")
+    private val accessTokenExpiration: Long,
+    @Value("\${custom.jwt.validation.refresh}")
+    private val refreshTokenExpiration: Long,
+    @Value("\${custom.jwt.secrets.app-key}")
+    private val jwtSecret: String
 ) {
     private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(jwtSecret.toByteArray())

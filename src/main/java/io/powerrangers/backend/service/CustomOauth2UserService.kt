@@ -73,6 +73,6 @@ class CustomOauth2UserService(
         val noun = powerRangers[Random().nextInt(powerRangers.size)]
         val number = Random().nextInt(1000)
 
-        return adj + noun + nickname + number // 귀여운 레드 홍길동123
+        return "$adj $noun $nickname $number" // 귀여운 레드 홍길동123
     }
 }

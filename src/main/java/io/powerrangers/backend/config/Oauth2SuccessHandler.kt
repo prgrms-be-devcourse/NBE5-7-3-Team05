@@ -22,7 +22,8 @@ import org.springframework.web.util.UriComponentsBuilder
 class Oauth2SuccessHandler(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
-    @Value("\${custom.oauth2.redirect-url}") private val baseUrl :String
+    @Value("\${custom.oauth2.redirect-url}")
+    private val baseUrl :String
 ) : SimpleUrlAuthenticationSuccessHandler() {
 
     @Throws(java.io.IOException::class, ServletException::class)

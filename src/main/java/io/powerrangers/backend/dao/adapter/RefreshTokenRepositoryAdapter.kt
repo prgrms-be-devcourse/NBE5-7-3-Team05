@@ -7,10 +7,8 @@ import io.powerrangers.backend.entity.RefreshToken
 import io.powerrangers.backend.entity.RefreshTokenBlackList
 import io.powerrangers.backend.entity.User
 import jakarta.persistence.EntityManager
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Repository
 class RefreshTokenRepositoryAdapter (
