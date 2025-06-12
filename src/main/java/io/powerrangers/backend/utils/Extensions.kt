@@ -1,11 +1,9 @@
 package io.powerrangers.backend.utils
 
-import io.powerrangers.backend.dto.UserDetails
-import io.powerrangers.backend.dto.UserFollowResponseDto
-import io.powerrangers.backend.dto.UserGetProfileResponseDto
-import io.powerrangers.backend.dto.comment.CommentResponseDto
-import io.powerrangers.backend.dto.comment.CommentUpdateResponseDto
+
 import io.powerrangers.backend.entity.Comment
+import io.powerrangers.backend.dto.*
+import io.powerrangers.backend.entity.Task
 import io.powerrangers.backend.entity.User
 
 fun User.toProfileResponseDto(): UserGetProfileResponseDto {
@@ -26,14 +24,36 @@ fun User.toUserFollowResponseDto(): UserFollowResponseDto {
     )
 }
 
-fun User.toUserDetails(user: User): UserDetails {
+fun User.toUserDetails(): UserDetails {
     return UserDetails(
-        id = user.id,
-        name = user.nickname,
-        email = user.email,
-        role = user.role,
-        providerId = user.providerId,
-        profileImage = user.profileImage
+        id = this.id,
+        name = this.nickname,
+        email = this.email,
+        role = this.role,
+        providerId = this.providerId,
+        profileImage = this.profileImage
+    )
+}
+
+fun Task.toTaskImageResponseDto(): TaskImageResponseDto {
+    return TaskImageResponseDto(
+        taskId = this.id!!,
+        imageUrl = this.taskImage,
+        status = this.status,
+        dueDate = this.dueDate
+    )
+}
+
+fun Task.toTaskResponseDto(): TaskResponseDto {
+    return TaskResponseDto(
+        id = this.id!!,
+        category = this.category,
+        content = this.content,
+        dueDate = this.dueDate,
+        status = this.status,
+        taskImage = this.taskImage,
+        scope = this.scope,
+        nickname = this.user.nickname
     )
 }
 

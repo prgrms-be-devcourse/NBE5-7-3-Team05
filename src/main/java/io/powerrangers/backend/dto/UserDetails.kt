@@ -4,13 +4,13 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
 
-class UserDetails (
+class UserDetails(
     var id: Long? = null,
     var role: Role? = null,
     val name: String,
     val email: String,
     val providerId: String,
-    val profileImage: String,
+    val profileImage: String? = null,
     val attributes: MutableMap<String, Any?> = mutableMapOf()
 ) : OAuth2User {
 
