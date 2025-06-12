@@ -11,7 +11,7 @@ class RefreshToken (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
-    val user: User?,
+    var user: User?,
 
     val refreshToken: String
 )
