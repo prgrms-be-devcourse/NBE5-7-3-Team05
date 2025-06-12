@@ -18,4 +18,5 @@ open class BaseEntity {
     @LastModifiedDate
     @Column(name = "updated_at")
     lateinit var updatedAt: LocalDateTime
+
 }
