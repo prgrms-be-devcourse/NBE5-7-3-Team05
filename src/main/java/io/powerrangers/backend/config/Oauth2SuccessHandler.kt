@@ -41,7 +41,7 @@ class Oauth2SuccessHandler(
         val validRefreshToken = jwtProvider.findValidRefreshToken(principal.id!!)
         // DB에 유효한 refresh token이 있다면 그것을 사용하고, 아니라면 모두 새로 만들어야 한다.
         validRefreshToken?.let {
-            accessToken = jwtProvider.issueAccessToken(findUser.id, findUser.role)
+            accessToken = jwtProvider.issueAccessToken(findUser.id!!, findUser.role)
             refreshToken = it.refreshToken
         } ?: run {
             val tokenPair = jwtProvider.generateTokenPair(findUser)
