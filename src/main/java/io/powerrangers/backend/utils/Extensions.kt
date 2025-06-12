@@ -4,7 +4,7 @@ import io.powerrangers.backend.dto.UserFollowResponseDto
 import io.powerrangers.backend.dto.UserGetProfileResponseDto
 import io.powerrangers.backend.entity.User
 
-fun User.toProfileResponseDto() : UserGetProfileResponseDto {
+fun User.toProfileResponseDto(): UserGetProfileResponseDto {
     return UserGetProfileResponseDto(
         userId = this.id!!,
         nickname = this.nickname,
@@ -13,7 +13,7 @@ fun User.toProfileResponseDto() : UserGetProfileResponseDto {
     )
 }
 
-fun User.toFollowResponseDto(): UserFollowResponseDto {
+fun User.toUserFollowResponseDto(): UserFollowResponseDto {
     return UserFollowResponseDto(
         id = this.id!!,
         nickname = this.nickname,
