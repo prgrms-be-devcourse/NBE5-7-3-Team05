@@ -1,5 +1,6 @@
 package io.powerrangers.backend.exception
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.powerrangers.backend.dto.BaseResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import java.io.IOException
 
-private val log = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
+private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -50,21 +51,21 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MissingRequestCookieException::class)
     protected fun handleMissingRequestCookieException(e: MissingRequestCookieException): ResponseEntity<BaseResponse<Void>> {
-        log.warn("[인증 실패] 토큰 쿠키가 존재하지 않음. 원인: ${e.message}")
+        log.warn { "[인증 실패] 토큰 쿠키가 존재하지 않음. 원인: ${e.message}" }
         return BaseResponse.error(ErrorCode.UNAUTHORIZED.message, ErrorCode.UNAUTHORIZED.status)
     }
 
     @ExceptionHandler(IOException::class)
     protected fun handleIOException(e: IOException): ResponseEntity<BaseResponse<Void>> {
         val errorCode = ErrorCode.INTERNAL_SERVER_ERROR
-        log.error("Unhandled I/O Exception occurred: ${e.message}", e)
+        log.error(e) { "Unhandled I/O Exception occurred: ${e.message}" }
         return BaseResponse.error(errorCode.message, errorCode.status)
     }
 
     @ExceptionHandler(Exception::class)
     protected fun handleException(e: Exception): ResponseEntity<BaseResponse<Void>> {
         val errorCode = ErrorCode.INTERNAL_SERVER_ERROR
-        log.error("Unhandled Exception occurred: ${e.message}", e)
+        log.error(e) { "Unhandled Exception occurred: ${e.message}" }
         return BaseResponse.error(errorCode.message, errorCode.status)
     }
 }
