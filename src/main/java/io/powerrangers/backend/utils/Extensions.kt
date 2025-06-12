@@ -23,13 +23,13 @@ fun User.toUserFollowResponseDto(): UserFollowResponseDto {
     )
 }
 
-fun User.toUserDetails(user: User): UserDetails {
+fun User.toUserDetails(): UserDetails {
     return UserDetails(
-        id = user.id,
-        name = user.nickname,
-        email = user.email,
-        role = user.role,
-        providerId = user.providerId,
-        profileImage = user.profileImage
+        id = this.id,
+        name = this.nickname,
+        email = this.email,
+        role = this.role,
+        providerId = this.providerId,
+        profileImage = this.profileImage
     )
 }
