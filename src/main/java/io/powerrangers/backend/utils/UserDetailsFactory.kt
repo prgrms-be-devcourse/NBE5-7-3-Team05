@@ -10,7 +10,6 @@ import java.util.*
 private val log = KotlinLogging.logger {}
 
 @Suppress("UNCHECKED_CAST")
-
 fun userDetails(oAuth2User: OAuth2User, providerId: String): UserDetails {
     val attributes = oAuth2User.attributes
     when (providerId.lowercase(Locale.getDefault())) {
