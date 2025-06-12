@@ -43,7 +43,7 @@ class UserService(
     @Transactional(readOnly = true)
     fun getTasksByUser(userId: Long, date: LocalDate): List<TaskResponseDto> {
         return taskService.getTasksByScope(userId)
-            .filter { it.dueDate!!.toLocalDate() == date }
+            .filter { it.dueDate.toLocalDate() == date }
             .map { TaskResponseDto.from(it) }
     }
 
