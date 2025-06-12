@@ -1,13 +1,12 @@
 package io.powerrangers.backend.controller
 
 import io.powerrangers.backend.dto.BaseResponse
-import io.powerrangers.backend.dto.comment.CommentCreateRequestDto
-import io.powerrangers.backend.dto.comment.CommentResponseDto
-import io.powerrangers.backend.dto.comment.CommentUpdateRequestDto
-import io.powerrangers.backend.dto.comment.CommentUpdateResponseDto
+import io.powerrangers.backend.dto.CommentCreateRequestDto
+import io.powerrangers.backend.dto.CommentResponseDto
+import io.powerrangers.backend.dto.CommentUpdateRequestDto
+import io.powerrangers.backend.dto.CommentUpdateResponseDto
 import io.powerrangers.backend.service.CommentService
 import jakarta.validation.Valid
-import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

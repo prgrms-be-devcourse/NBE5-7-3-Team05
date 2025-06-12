@@ -1,4 +1,4 @@
-package io.powerrangers.backend.dto.comment
+package io.powerrangers.backend.dto
 
 data class CommentUpdateResponseDto (
     val id: Long,

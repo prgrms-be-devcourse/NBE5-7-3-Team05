@@ -1,4 +1,4 @@
-package io.powerrangers.backend.dto.comment
+package io.powerrangers.backend.dto
 
 import java.time.LocalDateTime
 

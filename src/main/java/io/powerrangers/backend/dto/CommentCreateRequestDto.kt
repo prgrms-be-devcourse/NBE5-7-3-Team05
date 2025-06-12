@@ -1,4 +1,4 @@
-package io.powerrangers.backend.dto.comment
+package io.powerrangers.backend.dto
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

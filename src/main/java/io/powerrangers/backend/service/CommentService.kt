@@ -3,10 +3,10 @@ package io.powerrangers.backend.service
 import io.powerrangers.backend.dao.CommentRepository
 import io.powerrangers.backend.dao.TaskRepository
 import io.powerrangers.backend.dao.UserRepository
-import io.powerrangers.backend.dto.comment.CommentCreateRequestDto
-import io.powerrangers.backend.dto.comment.CommentResponseDto
-import io.powerrangers.backend.dto.comment.CommentUpdateRequestDto
-import io.powerrangers.backend.dto.comment.CommentUpdateResponseDto
+import io.powerrangers.backend.dto.CommentCreateRequestDto
+import io.powerrangers.backend.dto.CommentResponseDto
+import io.powerrangers.backend.dto.CommentUpdateRequestDto
+import io.powerrangers.backend.dto.CommentUpdateResponseDto
 import io.powerrangers.backend.entity.Comment
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
