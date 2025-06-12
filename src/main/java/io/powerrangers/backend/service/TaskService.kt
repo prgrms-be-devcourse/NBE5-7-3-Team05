@@ -125,7 +125,7 @@ class TaskService(
     @Transactional
     fun postpone(taskId: Long) {
         val task = taskRepository.findByIdOrNull(taskId) ?: throw CustomException(ErrorCode.TASK_NOT_FOUND)
-        task.dueDate = task.dueDate?.plusHours(24)
+        task.dueDate = task.dueDate.plusHours(24)
         taskRepository.save(task)
     }
 
