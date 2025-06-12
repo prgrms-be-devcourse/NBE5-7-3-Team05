@@ -62,9 +62,9 @@ class JwtAuthenticationFilter(
 
     @Throws(IOException::class)
     private fun handleAuthTokenException(response: HttpServletResponse, e: AuthTokenException) {
-        var message = e.errorCode.message
-        if (e.provider != null) {
-            message += " : " + e.provider
+        val message = buildString {
+            append(e.errorCode.message)
+            e.provider?.let { append(" : $it") }
         }
         response.apply {
             status = HttpServletResponse.SC_UNAUTHORIZED
