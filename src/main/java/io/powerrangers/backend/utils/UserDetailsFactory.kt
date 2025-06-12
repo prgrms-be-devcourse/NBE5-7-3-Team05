@@ -1,10 +1,9 @@
-package io.powerrangers.backend.service
+package io.powerrangers.backend.utils
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.ErrorCode
-import lombok.extern.slf4j.Slf4j
 import org.springframework.security.oauth2.core.user.OAuth2User
 import java.util.*
 
