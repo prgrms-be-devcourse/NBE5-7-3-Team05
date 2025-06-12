@@ -7,18 +7,18 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 class UserDetails(
     var id: Long? = null,
     var role: Role? = null,
-    val name: String,
+    val nickname: String,
     val email: String,
     val providerId: String,
     val profileImage: String? = null,
-    val attributes: MutableMap<String, Any?> = mutableMapOf()
+    val oauthAttributes: MutableMap<String, Any?> = mutableMapOf()
 ) : OAuth2User {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return listOf(SimpleGrantedAuthority(role?.name))
     }
 
-    override fun getName(): String = name
+    override fun getName(): String = nickname
 
-    override fun getAttributes(): Map<String, Any?> = attributes
+    override fun getAttributes(): Map<String, Any?> = oauthAttributes
 }

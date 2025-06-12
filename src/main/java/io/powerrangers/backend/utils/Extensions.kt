@@ -27,7 +27,7 @@ fun User.toUserFollowResponseDto(): UserFollowResponseDto {
 fun User.toUserDetails(): UserDetails {
     return UserDetails(
         id = this.id,
-        name = this.nickname,
+        nickname = this.nickname,
         email = this.email,
         role = this.role,
         providerId = this.providerId,

@@ -35,7 +35,7 @@ class CustomOauth2UserService(
 
         val provider = userRequest.clientRegistration.registrationId // google, naver, kakao
         val userDetails = genUserDetails(oAuth2User, provider)
-        var nickname = userDetails.name
+        var nickname = userDetails.nickname
 
         val findUser = userRepository.findByEmail(userDetails.email)
             ?: run {

@@ -15,33 +15,33 @@ fun genUserDetails(oAuth2User: OAuth2User, providerId: String): UserDetails {
     when (providerId.lowercase(Locale.getDefault())) {
         "google" -> {
             return UserDetails(
-                name = attributes["name"].toString(),
+                nickname = attributes["name"].toString(),
                 email = attributes["email"].toString(),
                 providerId = attributes["sub"].toString(),
                 profileImage = attributes["picture"].toString(),
-                attributes = attributes
+                oauthAttributes = attributes
             )
         }
 
         "kakao" -> {
             val properties = attributes["properties"] as MutableMap<String?, String?>
             return UserDetails(
-                name = properties["nickname"].toString(),
+                nickname = properties["nickname"].toString(),
                 email = attributes["id"].toString() + "@kakao.com",
                 providerId = attributes["id"].toString(),
                 profileImage = attributes["profile_image"].toString(),
-                attributes = attributes
+                oauthAttributes = attributes
             )
         }
 
         "naver" -> {
             val response = attributes["response"] as MutableMap<String?, String?>
             return UserDetails(
-                name = response["name"].toString(),
+                nickname = response["name"].toString(),
                 email = response["email"].toString(),
                 providerId = response["id"].toString(),
                 profileImage = response["profile_image"].toString(),
-                attributes = attributes
+                oauthAttributes = attributes
             )
         }
 
