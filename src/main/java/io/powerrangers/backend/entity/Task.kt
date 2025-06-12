@@ -21,7 +21,7 @@ class Task(
     var content: String,
 
     @Column(name = "due_date")
-    var dueDate: LocalDateTime? = null,
+    var dueDate: LocalDateTime,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
