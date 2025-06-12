@@ -16,26 +16,12 @@ data class BaseResponse<T> (
 ) {
 
     companion object {
-        //성공 메시지만 반환
-        fun success(status: HttpStatus): ResponseEntity<BaseResponse<Void>> {
-            return ResponseEntity.status(status)
-                .body(BaseResponse(status.value(), null, null))
-        }
-
-        //성공 메시지와 데이터 반환
-        fun <T> success(status: HttpStatus, data: T): ResponseEntity<BaseResponse<T>> {
+        fun <T> success(status: HttpStatus, data: T? = null): ResponseEntity<BaseResponse<T>> {
             return ResponseEntity.status(status)
                 .body(BaseResponse(status.value(), null, data))
         }
 
-        //에러 메시지만 반환
-        fun error(message: String?, status: HttpStatus): ResponseEntity<BaseResponse<Void>> {
-            return ResponseEntity.status(status)
-                .body(BaseResponse(status.value(), message, null))
-        }
-
-        //에러 메시지와 데이터를 반환
-        fun <T> error(message: String?, data: T, status: HttpStatus): ResponseEntity<BaseResponse<T>> {
+        fun <T> error(message: String? = null, status: HttpStatus, data: T? = null): ResponseEntity<BaseResponse<T>> {
             return ResponseEntity.status(status)
                 .body(BaseResponse(status.value(), message, data))
         }
