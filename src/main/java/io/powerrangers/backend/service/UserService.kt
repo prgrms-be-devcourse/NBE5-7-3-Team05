@@ -6,12 +6,13 @@ import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.dto.TaskResponseDto
 import io.powerrangers.backend.dto.UserGetProfileResponseDto
 import io.powerrangers.backend.dto.UserUpdateProfileRequestDto
-import io.powerrangers.backend.entity.Task
 import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
+import io.powerrangers.backend.utils.getCurrentUserId
 import io.powerrangers.backend.utils.toProfileResponseDto
+import org.springframework.data.repository.findByIdOrNull
 import io.powerrangers.backend.utils.toTaskResponseDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,17 +33,16 @@ class UserService(
         userRepository.existsByNickname(nickname)
 
     fun identified(userId: Long?): Boolean =
-        ContextUtil.getCurrentUserId() == userId
+        getCurrentUserId() == userId
 
     @Transactional(readOnly = true)
     fun getUserProfile(userId: Long): UserGetProfileResponseDto {
-        val user = userRepository.findById(userId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val user = userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
         return user.toProfileResponseDto()
     }
 
     @Transactional(readOnly = true)
-    fun getTasksByUser(userId: Long?, date: LocalDate): List<TaskResponseDto> {
+    fun getTasksByUser(userId: Long, date: LocalDate): List<TaskResponseDto> {
         return taskService.getTasksByScope(userId)
             .filter { it.dueDate.toLocalDate() == date }
             .map { it.toTaskResponseDto() }
@@ -56,8 +56,7 @@ class UserService(
 
     @Transactional
     fun updateUserProfile(userId: Long, request: UserUpdateProfileRequestDto, image: MultipartFile?) {
-        val user = userRepository.findById(userId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val user = userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         if (!identified(userId)) {
             throw CustomException(ErrorCode.NOT_THE_OWNER)
@@ -103,26 +102,25 @@ class UserService(
             throw CustomException(ErrorCode.NOT_THE_OWNER)
         }
 
-        userRepository.findById(userId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         findRefreshTokenAndAddToBlackList(userId)
 
         val refreshTokens = refreshTokenRepositoryAdapter.findAllRefreshTokensByUserId(userId)
-        refreshTokens.forEach { it.setUser(null) }
+        refreshTokens.forEach { it.user = null }
 
         userRepository.deleteById(userId)
     }
 
     @Transactional
     fun logout() {
-        val userId = ContextUtil.getCurrentUserId()
+        val userId = getCurrentUserId()
         findRefreshTokenAndAddToBlackList(userId)
     }
 
-    private fun findRefreshTokenAndAddToBlackList(userId: Long?) {
+    private fun findRefreshTokenAndAddToBlackList(userId: Long) {
         val refreshToken = refreshTokenRepositoryAdapter.findValidRefreshToken(userId)
-            .orElseThrow { AuthTokenException(ErrorCode.UNAUTHORIZED) }
+            ?: throw AuthTokenException(ErrorCode.UNAUTHORIZED)
 
         val refreshTokenValue = refreshToken.refreshToken
 
@@ -142,7 +140,7 @@ class UserService(
         val role = Role.valueOf(tokenBody.role)
 
         val refreshToken = refreshTokenRepositoryAdapter.findValidRefreshToken(userId)
-            .orElseThrow { AuthTokenException(ErrorCode.UNAUTHORIZED) }
+            ?: throw AuthTokenException(ErrorCode.UNAUTHORIZED)
 
         if (refreshTokenValue != refreshToken.refreshToken) {
             throw AuthTokenException(ErrorCode.UNAUTHORIZED)
