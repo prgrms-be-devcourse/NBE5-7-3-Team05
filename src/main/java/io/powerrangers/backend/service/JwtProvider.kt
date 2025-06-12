@@ -45,7 +45,7 @@ class JwtProvider(
     }
 
     fun generateTokenPair(user: User): TokenPair {
-        val id = user.id
+        val id = user.id!!
         val role = user.role
         val accessToken = issueAccessToken(id, role)
         val refreshToken = issueRefreshToken(id, role)

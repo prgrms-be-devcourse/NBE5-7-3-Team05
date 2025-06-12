@@ -7,7 +7,7 @@ import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.utils.toUserDetails
-import io.powerrangers.backend.utils.userDetails
+import io.powerrangers.backend.utils.genUserDetails
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -26,7 +26,7 @@ class CustomOauth2UserService(
 
     fun getUserDetails(userId: Long): UserDetails {
         val user = userRepository.findByIdOrNull(userId) ?: throw AuthTokenException(ErrorCode.USER_NOT_FOUND)
-        return user.toUserDetails(user)
+        return user.toUserDetails()
     }
 
     @Throws(OAuth2AuthenticationException::class)
@@ -34,7 +34,7 @@ class CustomOauth2UserService(
         val oAuth2User = super.loadUser(userRequest)
 
         val provider = userRequest.clientRegistration.registrationId // google, naver, kakao
-        val userDetails = userDetails(oAuth2User, provider)
+        val userDetails = genUserDetails(oAuth2User, provider)
         var nickname = userDetails.name
 
         val findUser = userRepository.findByEmail(userDetails.email)
