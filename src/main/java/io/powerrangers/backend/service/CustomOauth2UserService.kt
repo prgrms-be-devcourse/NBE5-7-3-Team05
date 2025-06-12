@@ -6,7 +6,7 @@ import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.ErrorCode
-import io.powerrangers.backend.util.toUserDetails
+import io.powerrangers.backend.utils.toUserDetails
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest

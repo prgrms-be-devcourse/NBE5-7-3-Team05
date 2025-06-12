@@ -5,8 +5,8 @@ import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.service.JwtProvider
-import io.powerrangers.backend.util.createAccessCookie
-import io.powerrangers.backend.util.createRefreshCookie
+import io.powerrangers.backend.utils.createAccessCookie
+import io.powerrangers.backend.utils.createRefreshCookie
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

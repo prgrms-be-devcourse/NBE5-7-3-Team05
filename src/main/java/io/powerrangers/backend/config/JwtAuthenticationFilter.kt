@@ -7,7 +7,7 @@ import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.service.CustomOauth2UserService
 import io.powerrangers.backend.service.JwtProvider
-import io.powerrangers.backend.util.ACCESS_TOKEN
+import io.powerrangers.backend.utils.ACCESS_TOKEN
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
