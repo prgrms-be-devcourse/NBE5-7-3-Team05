@@ -54,6 +54,7 @@ dependencies {
     // Kotlin
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'io.github.oshai:kotlin-logging-jvm:7.0.7'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     testImplementation 'io.mockk:mockk:1.14.2'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
