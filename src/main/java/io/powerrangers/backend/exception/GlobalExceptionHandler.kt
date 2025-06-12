@@ -2,7 +2,6 @@ package io.powerrangers.backend.exception
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.powerrangers.backend.dto.BaseResponse
-import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
