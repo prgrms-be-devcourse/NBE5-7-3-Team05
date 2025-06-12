@@ -7,5 +7,5 @@ data class TaskImageResponseDto(
     val taskId: Long,
     val imageUrl: String?,
     val status: TaskStatus,
-    val dueDate: LocalDateTime?
+    val dueDate: LocalDateTime
 )

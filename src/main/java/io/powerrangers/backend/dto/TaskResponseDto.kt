@@ -7,7 +7,7 @@ data class TaskResponseDto(
     val id: Long,
     val category: String,
     val content: String,
-    val dueDate: LocalDateTime?,
+    val dueDate: LocalDateTime,
     val status: TaskStatus,
     val taskImage: String?,
     val scope: TaskScope,
