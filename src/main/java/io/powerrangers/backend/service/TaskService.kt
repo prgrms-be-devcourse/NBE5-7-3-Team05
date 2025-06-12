@@ -7,6 +7,9 @@ import io.powerrangers.backend.entity.Task
 import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
+import io.powerrangers.backend.utils.getCurrentUserId
+import io.powerrangers.backend.utils.toTaskImageResponseDto
+import io.powerrangers.backend.utils.toTaskResponseDto
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,10 +29,9 @@ class TaskService(
 
     @Transactional
     fun createTask(dto: TaskCreateRequestDto) {
-        val userId = ContextUtil.getCurrentUserId()
+        val userId = getCurrentUserId()
 
-        val user: User = userRepository.findById(userId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val user: User = userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         val task = Task(
             category = dto.category,
@@ -58,7 +60,7 @@ class TaskService(
 
     private fun getTaskIfOwner(id: Long): Task {
         val task = taskRepository.findByIdOrNull(id) ?: throw CustomException(ErrorCode.TASK_NOT_FOUND)
-        val userId = ContextUtil.getCurrentUserId()
+        val userId = getCurrentUserId()
         if (task.user.id != userId) {
             throw CustomException(ErrorCode.NOT_THE_OWNER)
         }
@@ -95,11 +97,11 @@ class TaskService(
 
     fun getTaskImages(userId: Long): List<TaskImageResponseDto> {
         val tasks = getTasksByScope(userId)
-        return tasks.map { TaskImageResponseDto.from(it) }
+        return tasks.map { it.toTaskImageResponseDto() }
     }
 
-    protected fun getTasksByScope(userId: Long): List<Task> {
-        userRepository.findById(userId).orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+    internal fun getTasksByScope(userId: Long): List<Task> {
+        userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
         val scope = followService.checkScopeWithUser(userId)
         return when (scope) {
             TaskScope.PRIVATE -> taskRepository.findAllByUserId(userId)
@@ -110,12 +112,12 @@ class TaskService(
 
     fun getTask(taskId: Long): TaskResponseDto {
         val task = taskRepository.findByIdOrNull(taskId) ?: throw CustomException(ErrorCode.TASK_NOT_FOUND)
-        val scope = followService.checkScopeWithUser(task.user.id)
+        val scope = followService.checkScopeWithUser(task.user.id!!)
 
         return when {
-            scope == TaskScope.PRIVATE -> TaskResponseDto.from(task)
-            scope == TaskScope.FOLLOWERS && task.scope != TaskScope.PRIVATE -> TaskResponseDto.from(task)
-            scope == TaskScope.PUBLIC && task.scope == TaskScope.PUBLIC -> TaskResponseDto.from(task)
+            scope == TaskScope.PRIVATE -> task.toTaskResponseDto()
+            scope == TaskScope.FOLLOWERS && task.scope != TaskScope.PRIVATE -> task.toTaskResponseDto()
+            scope == TaskScope.PUBLIC && task.scope == TaskScope.PUBLIC -> task.toTaskResponseDto()
             else -> throw CustomException(ErrorCode.NOT_ALLOWED)
         }
     }
@@ -128,7 +130,7 @@ class TaskService(
     }
 
     fun getMonthlyTaskSummary(targetUserId: Long, year: Int, month: Int): TaskSummaryResponseDto {
-        val currentUserId = ContextUtil.getCurrentUserId()
+        val currentUserId = getCurrentUserId()
         val scope = followService.checkScopeWithUser(targetUserId)
 
         val start = LocalDate.of(year, month, 1)

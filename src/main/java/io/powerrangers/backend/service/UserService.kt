@@ -12,6 +12,7 @@ import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.utils.toProfileResponseDto
+import io.powerrangers.backend.utils.toTaskResponseDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -44,7 +45,7 @@ class UserService(
     fun getTasksByUser(userId: Long?, date: LocalDate): List<TaskResponseDto> {
         return taskService.getTasksByScope(userId)
             .filter { it.dueDate.toLocalDate() == date }
-            .map { TaskResponseDto.from(it) }
+            .map { it.toTaskResponseDto() }
     }
 
     @Transactional(readOnly = true)
