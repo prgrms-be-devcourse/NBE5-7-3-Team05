@@ -10,7 +10,10 @@ import io.powerrangers.backend.dto.comment.CommentUpdateResponseDto
 import io.powerrangers.backend.entity.Comment
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
-import lombok.RequiredArgsConstructor
+import io.powerrangers.backend.utils.getCurrentUserId
+import io.powerrangers.backend.utils.toResponseDto
+import io.powerrangers.backend.utils.toUpdateResponseDto
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,15 +27,15 @@ class CommentService (
 
     @Transactional
     fun createComment(request: CommentCreateRequestDto): CommentResponseDto {
-        val task = taskRepository.findById(request.taskId)
-            .orElseThrow<CustomException> { CustomException(ErrorCode.TASK_NOT_FOUND) }
+        val task = taskRepository.findByIdOrNull(request.taskId)
+            ?: throw CustomException(ErrorCode.TASK_NOT_FOUND)
 
-        val user = userRepository.findById(ContextUtil.getCurrentUserId())
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val user = userRepository.findByIdOrNull(getCurrentUserId())
+            ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         val parent = request.parentId?.let {
-            commentRepository.findById(it)
-                .orElseThrow { CustomException(ErrorCode.COMMENT_NOT_FOUND) }
+            commentRepository.findByIdOrNull(it)
+                ?: throw CustomException(ErrorCode.COMMENT_NOT_FOUND)
         }
 
 
@@ -43,12 +46,13 @@ class CommentService (
             content=request.content
         )
         commentRepository.save(comment)
-        return CommentResponseDto.from(comment)
+        return comment.toResponseDto()
     }
 
     @Transactional(readOnly = true)
     fun getComments(taskId: Long): List<CommentResponseDto> {
-        taskRepository.findById(taskId).orElseThrow { CustomException(ErrorCode.TASK_NOT_FOUND) }
+        taskRepository.findByIdOrNull(taskId)
+            ?: throw CustomException(ErrorCode.TASK_NOT_FOUND)
 
         val allComments = commentRepository.findByTaskId(taskId).orEmpty()
 
@@ -62,19 +66,19 @@ class CommentService (
 
     @Transactional
     fun updateComment(commentId: Long, request: CommentUpdateRequestDto): CommentUpdateResponseDto {
-        val comment = commentRepository.findById(commentId)
-            .orElseThrow { CustomException(ErrorCode.COMMENT_NOT_FOUND) }
+        val comment = commentRepository.findByIdOrNull(commentId)
+            ?: throw CustomException(ErrorCode.COMMENT_NOT_FOUND)
 
         validateOwner(comment)
         comment.content=request.content
 
-        return CommentUpdateResponseDto.from(comment)
+        return comment.toUpdateResponseDto()
     }
 
     @Transactional
     fun deleteComment(commentId: Long) {
-        val comment = commentRepository.findById(commentId)
-            .orElseThrow { CustomException(ErrorCode.COMMENT_NOT_FOUND) }
+        val comment = commentRepository.findByIdOrNull(commentId)
+            ?: throw CustomException(ErrorCode.COMMENT_NOT_FOUND)
         validateOwner(comment)
         commentRepository.deleteById(commentId)
     }
@@ -85,19 +89,11 @@ class CommentService (
             .filter { it.parent?.id == parent.id }
             .map { toDto(it, allComments) }
 
-        return CommentResponseDto(
-            id = parent.id ?: throw IllegalStateException("댓글 ID는 null일 수 없습니다."),
-            userId = parent.user.id,
-            content = parent.content,
-            nickname = parent.user.nickname,
-            profileImage = parent.user.profileImage,
-            children = children,
-            createdAt = parent.createdAt
-        )
+        return parent.toResponseDto(children)
     }
 
     private fun validateOwner(comment: Comment) {
-        val currentUserId = ContextUtil.getCurrentUserId()
+        val currentUserId = getCurrentUserId()
         if (comment.user.id!=currentUserId) {
             throw CustomException(ErrorCode.NOT_THE_OWNER)
         }

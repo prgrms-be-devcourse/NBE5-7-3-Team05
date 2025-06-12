@@ -1,5 +1,7 @@
 package io.powerrangers.backend.utils
 
+
+import io.powerrangers.backend.entity.Comment
 import io.powerrangers.backend.dto.*
 import io.powerrangers.backend.entity.Task
 import io.powerrangers.backend.entity.User
@@ -54,3 +56,26 @@ fun Task.toTaskResponseDto(): TaskResponseDto {
         nickname = this.user.nickname
     )
 }
+
+fun Comment.toResponseDto(children: List<CommentResponseDto> = emptyList()): CommentResponseDto {
+    return CommentResponseDto(
+        id = this.id!!,
+        content = this.content,
+        nickname = this.user.nickname,
+        profileImage = this.user.profileImage,
+        createdAt = this.createdAt,
+        userId = this.user.id!!,
+        children = children
+    )
+}
+
+fun Comment.toUpdateResponseDto(): CommentUpdateResponseDto{
+    return CommentUpdateResponseDto(
+        id=this.id!!,
+        content = this.content,
+        nickname = this.user.nickname,
+        profileImage = this.user.profileImage
+    )
+}
+
+
