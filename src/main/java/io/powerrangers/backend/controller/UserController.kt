@@ -9,6 +9,7 @@ import io.powerrangers.backend.utils.REFRESH_TOKEN
 import io.powerrangers.backend.utils.createAccessCookie
 import io.powerrangers.backend.utils.deleteAccessCookie
 import io.powerrangers.backend.utils.deleteRefreshCookie
+import io.powerrangers.backend.utils.getCurrentUserId
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -88,7 +89,7 @@ class UserController(
     }
 
     @GetMapping("/me")
-    fun getCurrentUserId(): ResponseEntity<BaseResponse<Long>> {
+    fun getMyId(): ResponseEntity<BaseResponse<Long>> {
         val userId = getCurrentUserId()
         return BaseResponse.success(HttpStatus.OK, userId)
     }
