@@ -8,7 +8,9 @@ import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.utils.toUserFollowResponseDto
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import io.powerrangers.backend.utils.getCurrentUserId
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -19,17 +21,15 @@ class FollowService(
 
     @Transactional
     fun follow(request: FollowRequestDto): FollowResponseDto {
-        // TODO : ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
-        val follower = userRepository.findById(ContextUtil.getCurrentUserId())
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
-        val following = userRepository.findById(request.followingId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+
+        val follower = userRepository.findByIdOrNull(getCurrentUserId())?: throw CustomException(ErrorCode.USER_NOT_FOUND)
+        val following = userRepository.findByIdOrNull(request.followingId)?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         if (followRepository.existsByFollowerAndFollowing(follower, following)) {
             throw CustomException(ErrorCode.ALREADY_FOLLOWED)
         }
 
-        val follow: Follow = Follow(
+        val follow = Follow(
             follower = follower,
             following = following,
         )
@@ -42,17 +42,15 @@ class FollowService(
 
         return FollowResponseDto(
             followId = saved.id!!,
-            followerId = saved.follower.id,
-            followingId = saved.following.id,
+            followerId = saved.follower.id!!,
+            followingId = saved.following.id!!,
         )
     }
 
     @Transactional
     fun unfollow(followingId: Long) {
-        val follower = userRepository.findById(ContextUtil.getCurrentUserId())
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
-        val following = userRepository.findById(followingId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val follower = userRepository.findByIdOrNull(getCurrentUserId())?: throw CustomException(ErrorCode.USER_NOT_FOUND)
+        val following = userRepository.findByIdOrNull(followingId)?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         val follow: Follow = followRepository.findByFollowerAndFollowing(follower, following)?: throw CustomException(ErrorCode.FOLLOW_NOT_FOUND)
 
@@ -61,34 +59,26 @@ class FollowService(
 
     @Transactional(readOnly = true)
     fun findFollowers(userId: Long): List<UserFollowResponseDto> {
-        userRepository.findById(userId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        userRepository.findByIdOrNull(userId)?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         // 팔로잉에 userId가 있어야 한다.
         val users = followRepository.findFollowersByUser(userId)
-
         return users.map { it.toUserFollowResponseDto() }
     }
 
     @Transactional(readOnly = true)
     fun findFollowings(userId: Long): List<UserFollowResponseDto> {
-        userRepository.findById(userId)
-            .orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        userRepository.findByIdOrNull(userId)?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         // 팔로워 id에 userId가 있어야 한다.
         val users = followRepository.findFollowingsByUser(userId)
         return users.map { it.toUserFollowResponseDto() }
-//        return users.stream()
-//            .map { user: User? -> UserFollowResponseDto.from(user) }
-//            .toList()
     }
 
     @Transactional(readOnly = true)
     fun checkFollowingRelationship(userId: Long): FollowCheckResponseDto {
-        val myId = ContextUtil.getCurrentUserId()
-
-        val me = userRepository.findById(myId).orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
-        val target = userRepository.findById(userId).orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val me = userRepository.findByIdOrNull(getCurrentUserId())?:throw CustomException(ErrorCode.USER_NOT_FOUND)
+        val target = userRepository.findByIdOrNull(userId)?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         return FollowCheckResponseDto(
             userId = userId,
@@ -98,14 +88,14 @@ class FollowService(
 
     @Transactional(readOnly = true)
     fun checkScopeWithUser(userId: Long): TaskScope {
-        val myId = ContextUtil.getCurrentUserId()
-        if (myId == userId) {
+        val myId = getCurrentUserId()
+        if (getCurrentUserId() == userId) {
             // 내 아이디 -> PUBLIC, PRIVATE, FOLLOWER 다 줘도 됨.
             return TaskScope.PRIVATE
         }
 
-        val me = userRepository.findById(myId).orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
-        val target = userRepository.findById(userId).orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
+        val me = userRepository.findByIdOrNull(myId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
+        val target = userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         val following = followRepository.existsByFollowerAndFollowing(me, target)
         val followed = followRepository.existsByFollowerAndFollowing(target, me)
@@ -120,14 +110,12 @@ class FollowService(
 
     @Transactional
     fun getFollowCount(userId: Long): FollowCountResponseDto {
-        userRepository.findById(userId).orElseThrow { CustomException(ErrorCode.USER_NOT_FOUND) }
-        val followersOfUser = followRepository.countFollowersByUser(userId)
-        val followingsOfUser = followRepository.countFollowingsByUser(userId)
+        userRepository.findByIdOrNull(userId) ?: throw CustomException(ErrorCode.USER_NOT_FOUND)
 
         return FollowCountResponseDto(
             userId = userId,
-            followerCount = followersOfUser,
-            followingCount = followingsOfUser
+            followerCount = followRepository.countFollowersByUser(userId),
+            followingCount = followRepository.countFollowingsByUser(userId)
         )
     }
 }
