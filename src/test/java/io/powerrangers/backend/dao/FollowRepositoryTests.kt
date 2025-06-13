@@ -1,6 +1,9 @@
 package io.powerrangers.backend.dao
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.powerrangers.backend.entity.Follow
 import io.powerrangers.backend.utils.genUser
 import io.powerrangers.backend.utils.genUserList
@@ -21,8 +24,9 @@ class FollowRepositoryTests @Autowired constructor(
     @Test
     fun `repository 주입 테스트`() {
 
-        assertThat(followRepository).isNotNull
-        assertThat(userRepository).isNotNull
+        followRepository shouldNotBe null
+        userRepository shouldNotBe null
+
     }
     
     @Test
@@ -43,8 +47,8 @@ class FollowRepositoryTests @Autowired constructor(
         val exists = followRepository.existsByFollowerAndFollowing(follower, following)
         val notExist = followRepository.existsByFollowerAndFollowing(following, follower)
 
-        assertThat(exists).isTrue()
-        assertThat(notExist).isFalse()
+        exists shouldBe true
+        notExist shouldBe false
     }
 
     @Test
@@ -57,10 +61,10 @@ class FollowRepositoryTests @Autowired constructor(
         val guest2 = userList[1]
 
         val notExist1 = followRepository.existsByFollowerAndFollowing(guest1, guest2)
-        assertThat(notExist1).isFalse()
+        notExist1 shouldBe false
 
         val notExist2 = followRepository.existsByFollowerAndFollowing(guest2, guest1)
-        assertThat(notExist2).isFalse()
+        notExist2 shouldBe false
     }
 
     @Test
@@ -81,16 +85,16 @@ class FollowRepositoryTests @Autowired constructor(
 
         val findFollow = followRepository.findByFollowerAndFollowing(follower, following)
 
-        assertThat(findFollow).isNotNull()
-        assertThat(findFollow!!.follower.nickname).isEqualTo(follower.nickname)
-        assertThat(findFollow!!.follower.email).isEqualTo(follower.email)
+        findFollow shouldNotBe null
+        findFollow!!.follower.nickname shouldBe follower.nickname
+        findFollow!!.follower.email shouldBe follower.email
 
-        assertThat(findFollow!!.following.nickname).isEqualTo(following.nickname)
-        assertThat(findFollow!!.following.email).isEqualTo(following.email)
+        findFollow!!.following.nickname shouldBe following.nickname
+        findFollow!!.following.email shouldBe following.email
 
         val notFollow = followRepository.findByFollowerAndFollowing(following, follower)
 
-        assertThat(notFollow).isNull()
+        notFollow shouldBe null
     }
 
     @Test
@@ -103,7 +107,7 @@ class FollowRepositoryTests @Autowired constructor(
         val guest2 = userList[1]
 
         val findFollow = followRepository.findByFollowerAndFollowing(guest1, guest2)
-        assertThat(findFollow).isNull()
+        findFollow shouldBe null
 
     }
 
@@ -130,19 +134,19 @@ class FollowRepositoryTests @Autowired constructor(
         followRepository.saveAll(followList)
 
         val followerList = followRepository.findFollowersByUser(me.id!!)
-        assertThat(followerList).hasSize(size)
+        followerList.size shouldBe size
 
         followerList.forEachIndexed { idx, follower ->
             val expected = userList[idx]
-            assertThat(follower.id).isEqualTo(expected.id)
-            assertThat(follower.nickname).isEqualTo(expected.nickname)
-            assertThat(follower.email).isEqualTo(expected.email)
+            follower.id shouldBe expected.id
+            follower.nickname shouldBe expected.nickname
+            follower.email shouldBe expected.email
         }
 
         val allFollows = followRepository.findAll()
         allFollows.forEach {
-            assertThat(it.following.id).isEqualTo(me.id)
-            assertThat(userList.map { u -> u.id }).contains(it.follower.id)
+            it.following.id shouldBe me.id
+            userList.map { u -> u.id } shouldContain it.follower.id
         }
     }
 
@@ -169,19 +173,20 @@ class FollowRepositoryTests @Autowired constructor(
         followRepository.saveAll(followList)
 
         val followingList = followRepository.findFollowingsByUser(me.id!!)
-        assertThat(followingList).hasSize(size)
+        followingList.size shouldBe size
 
         followingList.forEachIndexed { idx, following ->
             val expected = userList[idx]
-            assertThat(following.id).isEqualTo(expected.id)
-            assertThat(following.nickname).isEqualTo(expected.nickname)
-            assertThat(following.email).isEqualTo(expected.email)
+
+            following.id shouldBe expected.id
+            following.nickname shouldBe expected.nickname
+            following.email shouldBe expected.email
         }
 
         val allFollows = followRepository.findAll()
         allFollows.forEach {
-            assertThat(it.follower.id).isEqualTo(me.id)
-            assertThat(userList.map { u -> u.id }).contains(it.following.id)
+            it.follower.id shouldBe me.id
+            userList.map { u -> u.id } shouldContain it.following.id
         }
 
     }
@@ -210,7 +215,7 @@ class FollowRepositoryTests @Autowired constructor(
 
         val followersCount = followRepository.countFollowersByUser(me.id!!)
 
-        assertThat(followersCount).isEqualTo(size.toLong())
+        followersCount shouldBe size.toLong()
 
     }
 
@@ -238,7 +243,7 @@ class FollowRepositoryTests @Autowired constructor(
 
         val followingsCount = followRepository.countFollowingsByUser(me.id!!)
 
-        assertThat(followingsCount).isEqualTo(size.toLong())
+        followingsCount shouldBe size.toLong()
 
     }
 }
