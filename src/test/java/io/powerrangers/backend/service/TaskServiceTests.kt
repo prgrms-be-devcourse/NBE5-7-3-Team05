@@ -19,7 +19,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import io.powerrangers.backend.utils.getCurrentUserId
 
-class TaskServiceTest {
+class TaskServiceTests {
 
     private lateinit var taskRepository: TaskRepository
     private lateinit var userRepository: UserRepository
