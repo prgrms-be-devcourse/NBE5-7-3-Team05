@@ -136,6 +136,23 @@ class CommentRepositoryTests constructor(
 
     }
 
+    @Test
+    fun `findByTaskId 테스트`(){
+        val comment1 = commentRepository.save(
+            Comment(task = savedTask, user = savedUser, content = "첫 번째 댓글")
+        )
+        val comment2 = commentRepository.save(
+            Comment(task = savedTask, user = savedUser, content = "두 번째 댓글")
+        )
+
+        val result = commentRepository.findByTaskId(savedTask.id!!)
+
+        assertThat(result).hasSize(2)
+        assertThat(result.map { it?.content }).contains("첫 번째 댓글", "두 번째 댓글")
+        assertThat(result.all { it!!.user.id == savedUser.id }).isTrue()
+    }
+
+
     @Transactional
     @Test
     fun `댓글 삭제 시 자식댓글도 함께 삭제 성공테스트`() {
@@ -178,7 +195,7 @@ class CommentRepositoryTests constructor(
         val all = commentRepository.findAll()
         assertThat(all).hasSize(0)
     }
-    
+
 
     private fun createTask(user: User): Task{
         return Task(
