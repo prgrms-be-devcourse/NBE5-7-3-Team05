@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 private val log = KotlinLogging.logger {}
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class FollowRepositoryTests @Autowired constructor(
     var userRepository: UserRepository,
     var followRepository: FollowRepository
