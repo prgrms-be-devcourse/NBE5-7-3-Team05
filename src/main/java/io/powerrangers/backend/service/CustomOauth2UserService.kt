@@ -2,15 +2,11 @@ package io.powerrangers.backend.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.powerrangers.backend.dao.UserRepository
-import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.entity.User
-import io.powerrangers.backend.exception.AuthTokenException
-import io.powerrangers.backend.exception.ErrorCode
-import io.powerrangers.backend.utils.toUserDetails
 import io.powerrangers.backend.utils.genUserDetails
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2Error
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -21,17 +17,12 @@ private val log = KotlinLogging.logger {}
 
 @Service
 class CustomOauth2UserService(
-    private val userRepository: UserRepository
-) : DefaultOAuth2UserService() {
-
-    fun getUserDetails(userId: Long): UserDetails {
-        val user = userRepository.findByIdOrNull(userId) ?: throw AuthTokenException(ErrorCode.USER_NOT_FOUND)
-        return user.toUserDetails()
-    }
-
+    private val userRepository: UserRepository,
+    private val delegate: DefaultOAuth2UserService
+) : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     @Throws(OAuth2AuthenticationException::class)
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
-        val oAuth2User = super.loadUser(userRequest)
+        val oAuth2User = delegate.loadUser(userRequest)
 
         val provider = userRequest.clientRegistration.registrationId // google, naver, kakao
         val userDetails = genUserDetails(oAuth2User, provider)

@@ -4,6 +4,7 @@ import io.powerrangers.backend.dao.TokenRepository
 import io.powerrangers.backend.dao.UserRepository
 import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.dto.TaskResponseDto
+import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.dto.UserGetProfileResponseDto
 import io.powerrangers.backend.dto.UserUpdateProfileRequestDto
 import io.powerrangers.backend.entity.User
@@ -14,6 +15,7 @@ import io.powerrangers.backend.utils.getCurrentUserId
 import io.powerrangers.backend.utils.toProfileResponseDto
 import org.springframework.data.repository.findByIdOrNull
 import io.powerrangers.backend.utils.toTaskResponseDto
+import io.powerrangers.backend.utils.toUserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -147,5 +149,11 @@ class UserService(
         }
 
         return jwtProvider.issueAccessToken(userId, role)
+    }
+
+    @Transactional(readOnly = true)
+    fun getUserDetails(userId: Long): UserDetails {
+        val user = userRepository.findByIdOrNull(userId) ?: throw AuthTokenException(ErrorCode.USER_NOT_FOUND)
+        return user.toUserDetails()
     }
 }
