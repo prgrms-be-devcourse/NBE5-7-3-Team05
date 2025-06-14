@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 data class TaskCreateRequestDto(
 
     @field:NotBlank(message = "카테고리를 지정하지 않았습니다.")
+    @field:Size(max = 10, message = "카테고리는 10자 이하로 입력해주세요.")
     val category: String,
 
     @field:NotBlank(message = "내용을 지정하지 않았습니다.")

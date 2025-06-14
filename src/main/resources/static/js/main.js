@@ -43,7 +43,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 body: JSON.stringify(taskData),
             })
-            if (!res.ok) throw new Error("마감일을 지금보다 이후 시간으로 설정해주세요.")
+
+            if (!res.ok) {
+                const errorData = await res.json()
+                let errorMessage = errorData?.message || "오류가 발생했습니다."
+
+                if (errorMessage.includes("category")) {
+                    errorMessage = "카테고리는 10자 이하로 입력해주세요."
+                } else if (errorMessage.includes("dueDate") || errorMessage.includes("기한")) {
+                    errorMessage = "마감일을 지금보다 이후 시간으로 설정해주세요."
+                }
+                throw new Error(errorMessage)
+            }
 
             await fetchAndRenderTasks(new Date(), localStorage.getItem("userId"))
             const calendarEl = document.getElementById("calendar");
