@@ -54,14 +54,17 @@ class CommentService (
         taskRepository.findByIdOrNull(taskId)
             ?: throw CustomException(ErrorCode.TASK_NOT_FOUND)
 
-        val allComments = commentRepository.findByTaskId(taskId).orEmpty()
+        val allComments = commentRepository.findByTaskId(taskId).orEmpty().filterNotNull()
+
+        // 자식 댓글들을 부모 ID 기준으로 그룹화하여 매핑
+        val childrenMap: Map<Long, List<Comment>> = allComments
+            .filter { it.parent?.id != null }
+            .groupBy { it.parent!!.id!! }
 
         // 부모 댓글만 필터링
-        val parentComments = allComments
-            .filter { it?.parent == null }
-            .filterNotNull()
+        val parentComments = allComments.filter { it.parent == null }
 
-        return parentComments.map { toDto(it, allComments.filterNotNull()) }
+        return parentComments.map { toDto(it, childrenMap) }
     }
 
     @Transactional
@@ -84,10 +87,9 @@ class CommentService (
     }
 
     //조회 메서드에서 트리형태로 반환하기 위한 private 메서드
-    private fun toDto(parent: Comment, allComments: List<Comment>): CommentResponseDto {
-        val children = allComments
-            .filter { it.parent?.id == parent.id }
-            .map { toDto(it, allComments) }
+    private fun toDto(parent: Comment, childrenMap: Map<Long, List<Comment>>): CommentResponseDto {
+        // 현재 부모 댓글의 ID를 키로 자식 댓글 목록 조회
+        val children = childrenMap[parent.id]?.map { toDto(it, childrenMap) } ?: emptyList()
 
         return parent.toResponseDto(children)
     }
