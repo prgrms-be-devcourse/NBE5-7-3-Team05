@@ -28,8 +28,7 @@ class RefreshTokenRepositoryAdapterTests {
     @PersistenceContext
     lateinit var em: EntityManager
 
-
-    lateinit var repository: RefreshTokenRepositoryAdapter
+    lateinit var repository: TokenRepository
 
     @BeforeEach
     fun setUp() {

@@ -11,6 +11,7 @@ import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.utils.genUserDetails
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
@@ -26,12 +27,17 @@ class CustomOauth2UserServiceTests {
 
     val service = CustomOauth2UserService(userRepository, mockDelegate)
 
-    @Test
-    fun `처음 가입하는 유저는 loadUser() 호출 시 새로운 유저를 만들고 UserDetails을 반환해야 합니다`() {
+    lateinit var fakeUserRequest: OAuth2UserRequest
+    lateinit var fakeOAuth2User: OAuth2User
+    lateinit var fakeUserDetails: UserDetails
+    lateinit var fakeUser: User
+
+    @BeforeEach
+    fun setUp() {
         // given
         mockkStatic("io.powerrangers.backend.utils.UserDetailsFactoryKt")
-        val userRequest = mockk<OAuth2UserRequest>()
-        val fakeOAuth2User: OAuth2User = DefaultOAuth2User(
+        fakeUserRequest = mockk<OAuth2UserRequest>()
+        fakeOAuth2User = DefaultOAuth2User(
             listOf(SimpleGrantedAuthority(Role.USER.name)),
             mapOf(
                 "email" to "test@email.com",
@@ -40,14 +46,13 @@ class CustomOauth2UserServiceTests {
             "email" // attribute key used for name
         )
 
-        val dummyUserDetails = UserDetails(
+        fakeUserDetails = UserDetails(
             email = "test@email.com",
             nickname = "tester",
             providerId = "12345",
             role = Role.USER
         )
-
-        val user = User(
+        fakeUser = User(
             id = 1L,
             nickname = "tester",
             provider = "kakao",
@@ -56,20 +61,25 @@ class CustomOauth2UserServiceTests {
             intro = "hi",
             role = Role.USER
         )
-        every { mockDelegate.loadUser(userRequest) } returns fakeOAuth2User
+    }
 
-        every { userRequest.clientRegistration.registrationId } returns "kakao"
+    @Test
+    fun `처음 가입하는 유저는 loadUser() 호출 시 새로운 유저를 만들고 UserDetails을 반환해야 합니다`() {
+        // given
+        every { mockDelegate.loadUser(fakeUserRequest) } returns fakeOAuth2User
 
-        every { genUserDetails(fakeOAuth2User, "kakao") } returns dummyUserDetails
+        every { fakeUserRequest.clientRegistration.registrationId } returns "kakao"
+
+        every { genUserDetails(fakeOAuth2User, "kakao") } returns fakeUserDetails
 
         every { userRepository.findByEmail("test@email.com") } returns null
 
         every { userRepository.existsByNickname("tester") } returns false
 
-        every { userRepository.save(any()) } returns user
+        every { userRepository.save(any()) } returns fakeUser
 
         // when
-        val result = service.loadUser(userRequest)
+        val result = service.loadUser(fakeUserRequest)
 
         result.name shouldBe "tester"
         result.authorities.map { it.authority } shouldContain Role.USER.name
@@ -77,45 +87,17 @@ class CustomOauth2UserServiceTests {
 
     @Test
     fun `이미 가입한 유저는 loadUser() 호출 시 DB에서 유저 정보를 가져와 UserDetails를 반환한다`() {
+        // given
+        every { mockDelegate.loadUser(fakeUserRequest) } returns fakeOAuth2User
 
-        mockkStatic("io.powerrangers.backend.utils.UserDetailsFactoryKt")
-        val userRequest = mockk<OAuth2UserRequest>()
-        val fakeOAuth2User: OAuth2User = DefaultOAuth2User(
-            listOf(SimpleGrantedAuthority(Role.USER.name)),
-            mapOf(
-                "email" to "test@email.com",
-                "nickname" to "tester",
-            ),
-            "email" // attribute key used for name
-        )
+        every { fakeUserRequest.clientRegistration.registrationId } returns "kakao"
 
-        val dummyUserDetails = UserDetails(
-            email = "test@email.com",
-            nickname = "tester",
-            providerId = "12345",
-            role = Role.USER
-        )
+        every { genUserDetails(fakeOAuth2User, "kakao") } returns fakeUserDetails
 
-        val user = User(
-            id = 1L,
-            nickname = "tester",
-            provider = "kakao",
-            providerId = "12345",
-            email = "test@email.com",
-            intro = "hi",
-            role = Role.USER
-        )
-        every { mockDelegate.loadUser(userRequest) } returns fakeOAuth2User
-
-        every { userRequest.clientRegistration.registrationId } returns "kakao"
-
-        every { genUserDetails(fakeOAuth2User, "kakao") } returns dummyUserDetails
-
-        every { userRepository.findByEmail("test@email.com") } returns user
+        every { userRepository.findByEmail("test@email.com") } returns fakeUser
 
         // when
-
-        val result = service.loadUser(userRequest)
+        val result = service.loadUser(fakeUserRequest)
 
         verify(exactly = 0) {
             userRepository.save(any())
@@ -128,45 +110,17 @@ class CustomOauth2UserServiceTests {
     @Test
     fun `로그인하는 유저가 이미 같은 이메일로 가입한 적이 있다면 예외를 반환한다`() {
         // given
-        mockkStatic("io.powerrangers.backend.utils.UserDetailsFactoryKt")
-        val userRequest = mockk<OAuth2UserRequest>()
-        val fakeOAuth2User: OAuth2User = DefaultOAuth2User(
-            listOf(SimpleGrantedAuthority(Role.USER.name)),
-            mapOf(
-                "email" to "test@email.com",
-                "nickname" to "tester",
-            ),
-            "email" // attribute key used for name
-        )
+        every { mockDelegate.loadUser(fakeUserRequest) } returns fakeOAuth2User
 
-        val dummyUserDetails = UserDetails(
-            email = "test@email.com",
-            nickname = "tester",
-            providerId = "12345",
-            role = Role.USER
-        )
+        every { fakeUserRequest.clientRegistration.registrationId } returns "google"
 
-        val user = User(
-            id = 1L,
-            nickname = "tester",
-            provider = "kakao",
-            providerId = "12345",
-            email = "test@email.com",
-            intro = "hi",
-            role = Role.USER
-        )
-        every { mockDelegate.loadUser(userRequest) } returns fakeOAuth2User
+        every { genUserDetails(fakeOAuth2User, "kakao") } returns fakeUserDetails
 
-        every { userRequest.clientRegistration.registrationId } returns "google"
-
-        every { genUserDetails(fakeOAuth2User, "kakao") } returns dummyUserDetails
-
-        every { userRepository.findByEmail("test@email.com") } returns user
+        every { userRepository.findByEmail("test@email.com") } returns fakeUser
 
         // when, then
         assertThrows<OAuth2AuthenticationException> {
-            service.loadUser(userRequest)
+            service.loadUser(fakeUserRequest)
         }
-
     }
 }
