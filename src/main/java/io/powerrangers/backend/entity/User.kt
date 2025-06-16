@@ -4,6 +4,7 @@ import io.powerrangers.backend.dto.Role
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "`user`")
 class User (
 
     @Id
