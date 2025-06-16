@@ -910,6 +910,12 @@ async function postponeDueDate(taskId) {
         due.setHours(due.getHours() - 24)
         const targetDate = due.toISOString()
         await fetchAndRenderTasks(dueDateToDate(targetDate), localStorage.getItem("userId"))
+        const calendarEl = document.getElementById("calendar");
+        if (calendarEl) {
+            buildCalendar(calendarEl, localStorage.getItem("userId"));
+        } else {
+            console.warn("❗ calendar 요소가 없음");
+        }
     } catch (err) {
         console.error("미루기 실패:", err)
         alert(err.message)
