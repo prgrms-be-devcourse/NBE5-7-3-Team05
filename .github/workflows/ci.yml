@@ -80,7 +80,7 @@ jobs:
           SLACK_ICON: https://github.com/github.png
           SLACK_TITLE: Message
           SLACK_MESSAGE: |
-            '브랜치 CI 테스트가 성공했습니다. :clap:'
+            브랜치 CI 테스트가 성공했습니다. :clap:
             ${{ github.event_name == 'pull_request' && format('PR 제목: {0}', github.event.pull_request.title) || '' }}
 
       - name: Notify Slack on Failure
