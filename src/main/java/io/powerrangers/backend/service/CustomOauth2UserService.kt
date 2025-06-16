@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.powerrangers.backend.dao.UserRepository
 import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.utils.genUserDetails
+import org.springframework.context.annotation.Primary
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
@@ -15,6 +16,7 @@ import java.util.*
 
 private val log = KotlinLogging.logger {}
 
+@Primary
 @Service
 class CustomOauth2UserService(
     private val userRepository: UserRepository,
