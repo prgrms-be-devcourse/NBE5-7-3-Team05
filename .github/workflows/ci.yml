@@ -71,6 +71,9 @@ jobs:
         if: success() # 이 step은 job이 성공한 경우에만 실행된다.
         id: slack-success
         uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
           payload: |
             {
@@ -96,14 +99,14 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
       - name: Notify Slack on Failure
         if: failure() # 이 step은 job이 실패한 경우에만 실행됩니다.
         id: slack-failure
         uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
           payload: |
             {
@@ -129,9 +132,7 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        
 
   dependency-submission:
 
