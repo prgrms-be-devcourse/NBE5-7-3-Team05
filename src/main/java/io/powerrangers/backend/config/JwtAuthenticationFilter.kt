@@ -5,8 +5,8 @@ import io.powerrangers.backend.dto.TokenBody
 import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.ErrorCode
-import io.powerrangers.backend.service.CustomOauth2UserService
 import io.powerrangers.backend.service.JwtProvider
+import io.powerrangers.backend.service.UserService
 import io.powerrangers.backend.utils.ACCESS_TOKEN
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -25,7 +25,7 @@ private val log = KotlinLogging.logger {}
 @Component
 class JwtAuthenticationFilter(
     private val jwtProvider: JwtProvider,
-    private val customOauth2UserService: CustomOauth2UserService,
+    private val userService: UserService
 ) : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
@@ -44,7 +44,7 @@ class JwtAuthenticationFilter(
         val tokenBody: TokenBody = jwtProvider.parseToken(token)
         val userDetails: UserDetails
         try {
-            userDetails = customOauth2UserService.getUserDetails(tokenBody.userId)
+            userDetails = userService.getUserDetails(tokenBody.userId)
         } catch (e: AuthTokenException) {
             log.error { "토큰의 주인 유저를 찾을 수 없습니다." }
             handleAuthTokenException(response, e)

@@ -62,7 +62,7 @@ class JwtProvider(
         return tokenRepository.findValidRefreshToken(userId)
     }
 
-    fun validateToken(token: String?): Boolean {
+    fun validateToken(token: String): Boolean {
         try {
             parser.parseSignedClaims(token)
             return true
