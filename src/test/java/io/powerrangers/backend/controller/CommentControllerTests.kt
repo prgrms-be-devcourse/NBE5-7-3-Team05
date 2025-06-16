@@ -54,11 +54,6 @@ class CommentControllerTests {
         every { getCurrentUserId() } returns 1L
     }
 
-    @AfterEach
-    fun tearDown() {
-        unmockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
-    }
-
     @Test
     fun `댓글 생성 요청 성공하면 200 OK와 응답 데이터 반환`() {
         val request = CommentCreateRequestDto(
