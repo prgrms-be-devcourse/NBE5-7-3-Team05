@@ -54,7 +54,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew build -x test
+
+      - name: Unit Test, Slice Test
+        run: ./gradlew test
 
   dependency-submission:
 
