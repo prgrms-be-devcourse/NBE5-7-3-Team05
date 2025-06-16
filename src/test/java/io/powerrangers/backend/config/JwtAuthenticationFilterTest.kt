@@ -6,8 +6,8 @@ import io.powerrangers.backend.dto.UserDetails
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.CustomOAuth2AuthenticationFailureHandler
 import io.powerrangers.backend.exception.ErrorCode
-import io.powerrangers.backend.service.CustomOauth2UserService
 import io.powerrangers.backend.service.JwtProvider
+import io.powerrangers.backend.service.UserService
 import io.powerrangers.backend.utils.ACCESS_TOKEN
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ internal class JwtAuthenticationFilterTest {
     lateinit var jwtProvider: JwtProvider
 
     @MockitoBean
-    lateinit var oauth2UserService: CustomOauth2UserService
+    lateinit var userService: UserService
 
     @MockitoBean
     lateinit var oauth2SuccessHandler: Oauth2SuccessHandler
@@ -58,7 +58,7 @@ internal class JwtAuthenticationFilterTest {
 
         `when`(jwtProvider.validateToken(token)).thenReturn(true)
         `when`(jwtProvider.parseToken(token)).thenReturn(tokenBody)
-        `when`(oauth2UserService.getUserDetails(tokenBody.userId)).thenReturn(userDetails)
+        `when`(userService.getUserDetails(tokenBody.userId)).thenReturn(userDetails)
 
         mockMvc.get("/security-endpoint") { // 인증이 필요한 경로
             cookie(cookie)
@@ -95,7 +95,7 @@ internal class JwtAuthenticationFilterTest {
 
         `when`(jwtProvider.validateToken(token)).thenReturn(true)
         `when`(jwtProvider.parseToken(token)).thenReturn(tokenBody)
-        `when`(oauth2UserService.getUserDetails(-1L)).thenThrow(AuthTokenException(ErrorCode.USER_NOT_FOUND))
+        `when`(userService.getUserDetails(-1L)).thenThrow(AuthTokenException(ErrorCode.USER_NOT_FOUND))
 
         mockMvc.get("/security-endpoint") { // 인증이 필요한 경로
             cookie(cookie)

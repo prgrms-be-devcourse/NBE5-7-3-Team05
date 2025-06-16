@@ -1,11 +1,8 @@
 package io.powerrangers.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nimbusds.common.contenttype.ContentType
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import io.powerrangers.backend.config.JwtAuthenticationFilter
 import io.powerrangers.backend.dto.CommentCreateRequestDto
 import io.powerrangers.backend.dto.CommentResponseDto
@@ -15,7 +12,6 @@ import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.service.CommentService
 import io.powerrangers.backend.utils.getCurrentUserId
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given

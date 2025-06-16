@@ -2,8 +2,8 @@ package io.powerrangers.backend.dao
 
 import io.powerrangers.backend.dto.TaskScope
 import io.powerrangers.backend.entity.User
-import io.powerrangers.backend.util.genUser
-import io.powerrangers.backend.util.genTask
+import io.powerrangers.backend.utils.genUser
+import io.powerrangers.backend.utils.genTask
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

@@ -3,7 +3,7 @@ package io.powerrangers.backend.dao
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.entity.User
-import io.powerrangers.backend.util.genUser
+import io.powerrangers.backend.utils.genUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
