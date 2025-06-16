@@ -48,9 +48,6 @@ jobs:
               echo "Gradle cache directory does not exist yet."
             fi
 
-      - name: gradlew mod modify
-        run: chmod +x gradlew
-
       # gradle 캐싱 (0)
       - name: Gradle Caching
         uses: actions/cache@v3
@@ -61,6 +58,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: gradlew mod modify
+        run: chmod +x gradlew
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
