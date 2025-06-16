@@ -33,6 +33,10 @@ jobs:
           APP_YML: ${{ secrets.APPLICATION_YML }}
         run : echo "$APP_YML" | base64 --decode > src/main/resources/application.yml
 
+      - name: Slack bot token
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
 
@@ -58,6 +62,72 @@ jobs:
 
       - name: Unit Test, Slice Test
         run: ./gradlew test
+
+      - name: Notify Slack on Success
+        if: success() # 이 step은 job이 성공한 경우에만 실행된다.
+        id: slack-success
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "channel": "C08Q2KZN529",
+              "attachments": [
+                {
+                  "color": "#36a64f", # 성공시 연두색
+                  "title": "${{ github.repository }}", # 제목은 깃헙 레포지토리
+                  "title_link": "https://github.com/${{github.repository}}", # 제목 클릭시 레포지토리로 이동
+                  "text": "GitHub Action 성공",
+                  "fields": [
+                    {
+                      "title": "Repository",
+                      "value": "${{ github.repository }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Tag",
+                      "value": "${{ github.ref_name }}",
+                      "short": true
+                    }
+                  ]      
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Notify Slack on Failure
+        if: failure() # 이 step은 job이 실패한 경우에만 실행됩니다.
+        id: slack-failure
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "channel": "C08Q2KZN529",
+              "attachments": [
+                {
+                  "color": "#ff0000", # 실패시 빨간색
+                  "title": "${{ github.repository }}", # 제목은 깃헙 레포지토리
+                  "title_link": "https://github.com/${{github.repository}}", # 제목 클릭시 레포지토리로 이동
+                  "text": "GitHub Action 실패 :x:",
+                  "fields": [
+                    {
+                      "title": "Repository",
+                      "value": "${{ github.repository }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Tag",
+                      "value": "${{ github.ref_name }}",
+                      "short": true
+                    }
+                  ]      
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   dependency-submission:
 
