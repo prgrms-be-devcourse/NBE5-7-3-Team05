@@ -77,9 +77,9 @@ jobs:
               "channel": "C08Q2KZN529",
               "attachments": [
                 {
-                  "color": "#36a64f", # 성공시 연두색
-                  "title": "${{ github.repository }}", # 제목은 깃헙 레포지토리
-                  "title_link": "https://github.com/${{github.repository}}", # 제목 클릭시 레포지토리로 이동
+                  "color": "#36a64f",
+                  "title": "${{ github.repository }}",
+                  "title_link": "https://github.com/${{github.repository}}",
                   "text": "GitHub Action 성공",
                   "fields": [
                     {
@@ -110,9 +110,9 @@ jobs:
               "channel": "C08Q2KZN529",
               "attachments": [
                 {
-                  "color": "#ff0000", # 실패시 빨간색
-                  "title": "${{ github.repository }}", # 제목은 깃헙 레포지토리
-                  "title_link": "https://github.com/${{github.repository}}", # 제목 클릭시 레포지토리로 이동
+                  "color": "#ff0000",
+                  "title": "${{ github.repository }}",
+                  "title_link": "https://github.com/${{github.repository}}",
                   "text": "GitHub Action 실패 :x:",
                   "fields": [
                     {
