@@ -55,12 +55,6 @@ class CommentServiceTests {
         every { getCurrentUserId() } returns 1
     }
 
-    @AfterEach
-    fun tearDown() {
-        unmockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
-        unmockkStatic("io.powerrangers.backend.utils.ExtensionsKt")
-    }
-
     @Test
     fun `createComment 성공 시 저장된 댓글 DTO반환`() {
         val request = CommentCreateRequestDto(1L, null, "테스트 댓글")
