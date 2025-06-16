@@ -4,7 +4,7 @@ import io.powerrangers.backend.dto.Role
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "`user`") // 백틱으로 감싸기
+@Table(name = "`user`")
 class User (
 
     @Id
