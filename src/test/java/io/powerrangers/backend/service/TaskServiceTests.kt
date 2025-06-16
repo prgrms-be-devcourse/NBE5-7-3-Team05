@@ -261,7 +261,7 @@ class TaskServiceTests {
     fun `getTaskImages - 정상 케이스`() {
         every { taskService.getTasksByScope(1L) } returns listOf(testTask)
 
-                val result = taskService.getTaskImages(1L)
+        val result = taskService.getTaskImages(1L)
 
         result.size shouldBe 1
         result[0].imageUrl shouldBe testTask.taskImage
@@ -275,7 +275,7 @@ class TaskServiceTests {
         every { followService.checkScopeWithUser(1L) } returns TaskScope.PRIVATE
         every { taskRepository.findAllByUserId(1L) } returns listOf(testTask)
 
-                val result = taskService.getTasksByScope(1L)
+        val result = taskService.getTasksByScope(1L)
 
         testTask shouldBe result[0]
 
@@ -288,7 +288,7 @@ class TaskServiceTests {
         every { followService.checkScopeWithUser(1L) } returns TaskScope.FOLLOWERS
         every { taskRepository.findTasksForFollowers(1L) } returns listOf(testTask)
 
-                val result = taskService.getTasksByScope(1L)
+        val result = taskService.getTasksByScope(1L)
 
         testTask shouldBe result[0]
         verify { taskRepository.findTasksForFollowers(1L) }
@@ -300,7 +300,7 @@ class TaskServiceTests {
         every { followService.checkScopeWithUser(1L) } returns TaskScope.PUBLIC
         every { taskRepository.findTasksForPublic(1L) } returns listOf(testTask)
 
-                val result = taskService.getTasksByScope(1L)
+        val result = taskService.getTasksByScope(1L)
 
         testTask shouldBe result[0]
         verify { taskRepository.findTasksForPublic(1L) }
