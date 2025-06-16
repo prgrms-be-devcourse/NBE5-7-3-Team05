@@ -4,27 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.powerrangers.backend.config.JwtAuthenticationFilter
-import io.powerrangers.backend.dto.TaskResponseDto
-import io.powerrangers.backend.dto.TaskScope
-import io.powerrangers.backend.dto.TaskStatus
-import io.powerrangers.backend.dto.UserGetProfileResponseDto
-import io.powerrangers.backend.dto.UserUpdateProfileRequestDto
+import io.powerrangers.backend.dto.*
 import io.powerrangers.backend.exception.AuthTokenException
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.service.CustomOauth2UserService
 import io.powerrangers.backend.service.JwtProvider
 import io.powerrangers.backend.service.UserService
-import io.powerrangers.backend.util.getCurrentUserId
+import io.powerrangers.backend.utils.getCurrentUserId
 import jakarta.servlet.http.Cookie
-import org.mockito.Mockito
-import org.mockito.Mockito.doNothing
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.doThrow
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.ComponentScan
@@ -32,17 +22,11 @@ import org.springframework.context.annotation.FilterType
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.Test
@@ -300,7 +284,7 @@ class UserControllerTests {
         // given
         val userId = 42L
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt") // getCurrentUserId 확장함수의 패키지명을 정확히 넣기
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt") // getCurrentUserId 확장함수의 패키지명을 정확히 넣기
         every { getCurrentUserId() } returns userId
 
         mockMvc.perform(get("/users/me"))
@@ -310,7 +294,7 @@ class UserControllerTests {
 
     @Test
     fun `GET - 비로그인 사용자는 401 UNAUTHORIZED`() {
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } throws AuthTokenException(ErrorCode.UNAUTHORIZED)
 
         mockMvc.perform(get("/users/me"))

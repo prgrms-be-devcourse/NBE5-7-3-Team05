@@ -3,35 +3,23 @@ package io.powerrangers.backend.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldHave
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.verify
+import io.mockk.*
 import io.powerrangers.backend.dao.TaskRepository
 import io.powerrangers.backend.dao.TokenRepository
 import io.powerrangers.backend.dao.UserRepository
-import io.powerrangers.backend.dao.targetIntro
-import io.powerrangers.backend.dao.targetUserId
 import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.dto.UserUpdateProfileRequestDto
 import io.powerrangers.backend.entity.RefreshToken
 import io.powerrangers.backend.entity.RefreshTokenBlackList
-import io.powerrangers.backend.entity.User
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
-import io.powerrangers.backend.util.genUser
-import io.powerrangers.backend.util.getCurrentUserId
+import io.powerrangers.backend.utils.genUser
+import io.powerrangers.backend.utils.getCurrentUserId
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.`when`
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.multipart.MultipartFile
 import kotlin.test.assertNotNull
@@ -243,7 +231,7 @@ class UserServiceUnitTests {
 
         ReflectionTestUtils.setField(user, "id", targetUserId)
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns user
         every { userRepository.existsByNickname(targetNickname) } returns true
@@ -284,7 +272,7 @@ class UserServiceUnitTests {
             targetProfileImage,
         )
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns user
         every { userRepository.existsByNickname(newNickname) } returns false
@@ -326,7 +314,7 @@ class UserServiceUnitTests {
             profileImage = null // 무관
         )
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns user
         every { userRepository.existsByNickname(targetNickname) } returns false
@@ -350,7 +338,7 @@ class UserServiceUnitTests {
             targetIntro,
             null
         )
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
 
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns null
@@ -387,7 +375,7 @@ class UserServiceUnitTests {
         )
         ReflectionTestUtils.setField(user, "id", failUserId)
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(failUserId) } returns user
 
@@ -424,7 +412,7 @@ class UserServiceUnitTests {
 
         ReflectionTestUtils.setField(user, "id", targetUserId)
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns user
         every { userRepository.existsByNickname(duplicatedNickname) } returns true
@@ -466,7 +454,7 @@ class UserServiceUnitTests {
             every { contentType } returns "text/plain"
         }
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns user
 
@@ -507,7 +495,7 @@ class UserServiceUnitTests {
 
         ReflectionTestUtils.setField(user, "id", targetUserId)
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
 
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns user
@@ -533,7 +521,7 @@ class UserServiceUnitTests {
         // given
         val failUserId = 999L
 
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns 1L
         every { userRepository.findByIdOrNull(failUserId) } returns mockk()
 
@@ -550,7 +538,7 @@ class UserServiceUnitTests {
     fun `cancelAccount 유저가 존재하지 않는 경우 실패 테스트`() {
 
         // given
-        mockkStatic("io.powerrangers.backend.util.ContextUtilKt")
+        mockkStatic("io.powerrangers.backend.utils.ContextUtilKt")
         every { getCurrentUserId() } returns targetUserId
         every { userRepository.findByIdOrNull(targetUserId) } returns null
 

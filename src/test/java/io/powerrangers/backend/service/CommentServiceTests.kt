@@ -13,7 +13,6 @@ import io.powerrangers.backend.exception.ErrorCode
 import io.powerrangers.backend.utils.getCurrentUserId
 import io.powerrangers.backend.utils.toResponseDto
 import io.powerrangers.backend.utils.toUpdateResponseDto
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows

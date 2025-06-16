@@ -1,8 +1,5 @@
-package io.powerrangers.backend.repository
+package io.powerrangers.backend.dao
 
-import io.powerrangers.backend.dao.CommentRepository
-import io.powerrangers.backend.dao.TaskRepository
-import io.powerrangers.backend.dao.UserRepository
 import io.powerrangers.backend.dto.TaskScope
 import io.powerrangers.backend.entity.Comment
 import io.powerrangers.backend.entity.Task
@@ -10,14 +7,10 @@ import io.powerrangers.backend.entity.User
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import jakarta.transaction.Transactional
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.hibernate.Hibernate
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.dao.DataIntegrityViolationException
 import java.time.LocalDateTime
 import kotlin.test.Test
 
@@ -52,9 +45,9 @@ class CommentRepositoryTests constructor(
         val savedComment = commentRepository.save(comment)
         val found = commentRepository.findById(savedComment.id!!)
 
-        assertThat(found).isPresent
-        assertThat(found.get().content).isEqualTo("잘 주무셨어요?")
-        assertThat(found.get().user.nickname).isEqualTo("taeho4523")
+        Assertions.assertThat(found).isPresent
+        Assertions.assertThat(found.get().content).isEqualTo("잘 주무셨어요?")
+        Assertions.assertThat(found.get().user.nickname).isEqualTo("taeho4523")
     }
 
     @Test
@@ -62,15 +55,15 @@ class CommentRepositoryTests constructor(
         val comment = Comment(
             task = savedTask,
             user = savedUser,
-            content ="부모댓글이에요",
+            content = "부모댓글이에요",
             parent = null
         )
         val savedComment = commentRepository.save(comment)
         val found = commentRepository.findById(savedComment.id!!)
 
-        assertThat(found).isPresent
-        assertThat(found.get().content).isEqualTo("부모댓글이에요")
-        assertThat(found.get().parent).isNull()
+        Assertions.assertThat(found).isPresent
+        Assertions.assertThat(found.get().content).isEqualTo("부모댓글이에요")
+        Assertions.assertThat(found.get().parent).isNull()
     }
 
     @Test
@@ -92,9 +85,9 @@ class CommentRepositoryTests constructor(
         val childComment = commentRepository.save(child)
         val found = commentRepository.findById(childComment.id!!)
 
-        assertThat(found).isPresent
-        assertThat(found.get().content).isEqualTo("자식댓글이에요")
-        assertThat(found.get().parent?.id).isEqualTo(parentComment.id)
+        Assertions.assertThat(found).isPresent
+        Assertions.assertThat(found.get().content).isEqualTo("자식댓글이에요")
+        Assertions.assertThat(found.get().parent?.id).isEqualTo(parentComment.id)
 
     }
 
@@ -111,16 +104,37 @@ class CommentRepositoryTests constructor(
         val comments = commentRepository.findAll()
             .filter { it.task.id == savedTask.id && it.parent == null }
 
-        assertThat(comments).hasSize(2)
-        assertThat(comments.map { it.content }).contains("첫 댓글", "두 번째 댓글")
+        Assertions.assertThat(comments).hasSize(2)
+        Assertions.assertThat(comments.map { it.content }).contains("첫 댓글", "두 번째 댓글")
     }
 
     @Transactional
     @Test
     fun `부모 ID로 자식댓글 조회 성공테스트`() {
-        val parent=commentRepository.save(Comment(task = savedTask, user = savedUser, content="부모댓글이에요", parent=null))
-        val child1=commentRepository.save(Comment(task = savedTask, user = savedUser, content="자식댓글1이에요",parent = parent))
-        val child2=commentRepository.save(Comment(task = savedTask, user = savedUser, content = "자식댓글2에요", parent = parent))
+        val parent=commentRepository.save(
+            Comment(
+                task = savedTask,
+                user = savedUser,
+                content = "부모댓글이에요",
+                parent = null
+            )
+        )
+        val child1=commentRepository.save(
+            Comment(
+                task = savedTask,
+                user = savedUser,
+                content = "자식댓글1이에요",
+                parent = parent
+            )
+        )
+        val child2=commentRepository.save(
+            Comment(
+                task = savedTask,
+                user = savedUser,
+                content = "자식댓글2에요",
+                parent = parent
+            )
+        )
 
         em.flush()
         em.clear()
@@ -130,8 +144,8 @@ class CommentRepositoryTests constructor(
 
 
 
-        assertThat(children).hasSize(2)
-        assertThat(children.map { it.content }).contains("자식댓글1이에요","자식댓글2에요")
+        Assertions.assertThat(children).hasSize(2)
+        Assertions.assertThat(children.map { it.content }).contains("자식댓글1이에요","자식댓글2에요")
 
     }
 
@@ -146,17 +160,24 @@ class CommentRepositoryTests constructor(
 
         val result = commentRepository.findByTaskId(savedTask.id!!)
 
-        assertThat(result).hasSize(2)
-        assertThat(result.map { it?.content }).contains("첫 번째 댓글", "두 번째 댓글")
-        assertThat(result.all { it!!.user.id == savedUser.id }).isTrue()
+        Assertions.assertThat(result).hasSize(2)
+        Assertions.assertThat(result.map { it?.content }).contains("첫 번째 댓글", "두 번째 댓글")
+        Assertions.assertThat(result.all { it!!.user.id == savedUser.id }).isTrue()
     }
 
 
     @Transactional
     @Test
     fun `댓글 삭제 시 자식댓글도 함께 삭제 성공테스트`() {
-        val parent = commentRepository.save(Comment(task = savedTask, user = savedUser, content="부모댓글이에요"))
-        val child = commentRepository.save(Comment(task = savedTask, user = savedUser, content="자식댓글이에요",parent=parent))
+        val parent = commentRepository.save(Comment(task = savedTask, user = savedUser, content = "부모댓글이에요"))
+        val child = commentRepository.save(
+            Comment(
+                task = savedTask,
+                user = savedUser,
+                content = "자식댓글이에요",
+                parent = parent
+            )
+        )
 
         em.flush()
         em.clear()
@@ -166,18 +187,18 @@ class CommentRepositoryTests constructor(
         em.clear()
 
         val remain=commentRepository.findAll()
-        assertThat(remain).isEmpty()
+        Assertions.assertThat(remain).isEmpty()
     }
 
 
     @Test
     fun `존재하지 않는 부모 ID로 자식댓글 저장시 실패테스트`() {
-        val fakeParent = Comment(task = savedTask, user = savedUser, content="존재하지 않는 부모" )
+        val fakeParent = Comment(task = savedTask, user = savedUser, content = "존재하지 않는 부모")
         val detachedParent= em.merge(fakeParent)
         em.remove(detachedParent)
 
         val child = Comment(task = savedTask, user = savedUser, content = "자식 댓글", parent = detachedParent)
-        assertThatThrownBy {
+        Assertions.assertThatThrownBy {
             commentRepository.save(child)
             em.flush()
         }.isInstanceOf(IllegalStateException::class.java)
@@ -192,11 +213,11 @@ class CommentRepositoryTests constructor(
 
         // 검증: 전체 댓글 수 그대로 유지됨
         val all = commentRepository.findAll()
-        assertThat(all).hasSize(0)
+        Assertions.assertThat(all).hasSize(0)
     }
 
 
-    private fun createTask(user: User): Task{
+    private fun createTask(user: User): Task {
         return Task(
             category = "꿀잠자기",
             content = "기가막히게자기",
@@ -206,7 +227,7 @@ class CommentRepositoryTests constructor(
         )
     }
 
-    private fun createUser(): User{
+    private fun createUser(): User {
         return User(
             nickname = "taeho4523",
             provider = "kakao",

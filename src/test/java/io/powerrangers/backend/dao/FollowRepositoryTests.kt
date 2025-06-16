@@ -7,10 +7,8 @@ import io.kotest.matchers.shouldNotBe
 import io.powerrangers.backend.entity.Follow
 import io.powerrangers.backend.utils.genUser
 import io.powerrangers.backend.utils.genUserList
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 
 private val log = KotlinLogging.logger {}
