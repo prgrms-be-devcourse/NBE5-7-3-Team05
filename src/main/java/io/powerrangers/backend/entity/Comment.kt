@@ -4,6 +4,11 @@ import jakarta.persistence.*
 
 @Entity
 class Comment(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
+    val id: Long? = null,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
     val task: Task,
@@ -19,12 +24,6 @@ class Comment(
     @Column(nullable = false)
     var content: String
 ) : BaseEntity() {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
-    val id: Long? = null
-
     @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL], orphanRemoval = true)
     val children: MutableList<Comment> = mutableListOf()
 }
