@@ -33,10 +33,6 @@ jobs:
           APP_YML: ${{ secrets.APPLICATION_YML }}
         run : echo "$APP_YML" | base64 --decode > src/main/resources/application.yml
 
-      - name: Slack bot token
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
 
