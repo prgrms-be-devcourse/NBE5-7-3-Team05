@@ -80,8 +80,8 @@ jobs:
           SLACK_ICON: https://github.com/github.png
           SLACK_TITLE: Message
           SLACK_MESSAGE: |
-            ${{ github.event.pull_request.title }}
             '브랜치 CI 테스트가 성공했습니다. :clap:'
+            ${{ github.event_name == 'pull_request' && format('PR 제목: {0}', github.event.pull_request.title) || '' }}
 
       - name: Notify Slack on Failure
         if: failure() # 이 step은 job이 실패한 경우에만 실행됩니다.
@@ -96,8 +96,8 @@ jobs:
           SLACK_ICON: https://github.com/github.png
           SLACK_TITLE: Message
           SLACK_MESSAGE: |
-            ${{ github.event.pull_request.title }}
-            '브랜치 CI 테스트가 실패했습니다. :boom:'
+            브랜치 CI 테스트가 실패했습니다. :boom:
+            ${{ github.event_name == 'pull_request' && format('PR 제목: {0}', github.event.pull_request.title) || '' }}
         
 
   dependency-submission:
