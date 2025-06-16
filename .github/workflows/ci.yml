@@ -75,7 +75,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          SLACK_COLOR: '#ff00ff'
+          SLACK_COLOR: '#2DB400'
           SLACK_USERNAME: Github CI
           SLACK_ICON: https://github.com/github.png
           SLACK_TITLE: Message
