@@ -37,8 +37,8 @@ jobs:
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
 
       - name: Print Gradle cache directory
-        run:
-          echo "GRADLE_USER_HOME: ${GRADLE_USER_HOME:-$HOME/.gradle}"
+        run: echo "GRADLE_USER_HOME: ${GRADLE_USER_HOME:-$HOME/.gradle}"
+
       - name: List Gradle cache files
         run: ls -la ${GRADLE_USER_HOME:-$HOME/.gradle}/caches
 
