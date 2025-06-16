@@ -30,3 +30,12 @@ fun genUserListWithId(size: Int) : List<User> {
     }
     return users
 }
+
+fun genUserList(size: Int) : List<User> {
+    val users = mutableListOf<User>()
+    for(i in 0 until size) {
+        users.add(genUser(nickname="user_$i", email = "user_${i}@email.com"))
+    }
+    return users
+}
+

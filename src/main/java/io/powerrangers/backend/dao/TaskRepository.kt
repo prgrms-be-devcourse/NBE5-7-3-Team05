@@ -17,17 +17,17 @@ interface TaskRepository : JpaRepository<Task, Long> {
     fun findTasksForPublic(@Param("userId") userId: Long): List<Task>
 
     @Query("""
-        SELECT FUNCTION('DATE', t.dueDate), COUNT(t)
-        FROM Task t
-        WHERE t.user.id = :targetUserId
-          AND t.dueDate BETWEEN :start AND :end
-          AND (
-              (:scope = 'PUBLIC' AND t.scope = 'PUBLIC')
-              OR (:scope = 'FOLLOWERS' AND (t.scope = 'PUBLIC' OR t.scope = 'FOLLOWERS'))
-              OR (:scope = 'PRIVATE' AND t.user.id = :currentUserId)
-          )
-        GROUP BY FUNCTION('DATE', t.dueDate)
-    """)
+    SELECT CAST(t.dueDate AS date), COUNT(t)
+    FROM Task t
+    WHERE t.user.id = :targetUserId
+      AND t.dueDate BETWEEN :start AND :end
+      AND (
+          (:scope = 'PUBLIC' AND t.scope = 'PUBLIC')
+          OR (:scope = 'FOLLOWERS' AND (t.scope = 'PUBLIC' OR t.scope = 'FOLLOWERS'))
+          OR (:scope = 'PRIVATE' AND t.user.id = :currentUserId)
+      )
+    GROUP BY CAST(t.dueDate AS date)
+""")
     fun countTasksByDateWithScope(
         @Param("targetUserId") targetUserId: Long,
         @Param("start") start: LocalDateTime,
@@ -35,5 +35,5 @@ interface TaskRepository : JpaRepository<Task, Long> {
         @Param("scope") scope: String,
         @Param("currentUserId") currentUserId: Long
     ): List<Array<Any>>
-}
 
+}
