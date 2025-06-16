@@ -22,7 +22,6 @@ import java.time.LocalDateTime
 import kotlin.test.Test
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CommentRepositoryTests constructor(
     @Autowired
     val commentRepository: CommentRepository,
