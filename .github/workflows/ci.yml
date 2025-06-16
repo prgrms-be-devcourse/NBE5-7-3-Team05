@@ -59,6 +59,14 @@ jobs:
       - name: Unit Test, Slice Test
         run: ./gradlew test
 
+  slack-notify:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+
+    steps:
+
       - name: Notify Slack on Success
         if: success() # 이 step은 job이 성공한 경우에만 실행된다.
         id: slack-success
