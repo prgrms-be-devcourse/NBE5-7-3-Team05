@@ -35,6 +35,13 @@ jobs:
 
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
+
+      - name: Print Gradle cache directory
+        run:
+          echo "GRADLE_USER_HOME: ${GRADLE_USER_HOME:-$HOME/.gradle}"
+      - name: List Gradle cache files
+        run: ls -la ${GRADLE_USER_HOME:-$HOME/.gradle}/caches
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
