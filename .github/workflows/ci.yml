@@ -1,0 +1,121 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Inject application.yml
+        env :
+          APP_YML: ${{ secrets.APPLICATION_YML }}
+        run : echo "$APP_YML" | base64 --decode > src/main/resources/application.yml
+
+      # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
+      # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      # gradle 캐싱 (0)
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: gradlew mod modify
+        run: chmod +x gradlew
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build -x test
+
+      - name: Unit Test, Slice Test
+        run: ./gradlew test
+
+  slack-notify:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if : always()
+    permissions:
+        contents: read
+
+    steps:
+
+      - name: Notify Slack on Success
+        if: needs.build-and-test.result == 'success' # 이 step은 job이 성공한 경우에만 실행된다.
+        id: slack-success
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_COLOR: '#2DB400'
+          SLACK_USERNAME: Github CI
+          SLACK_ICON: https://github.com/github.png
+          SLACK_TITLE: Message
+          SLACK_MESSAGE: |
+            브랜치 CI 테스트가 성공했습니다. :clap:
+            ${{ github.event_name == 'pull_request' && format('PR 제목: {0}', github.event.pull_request.title) || '' }}
+
+      - name: Notify Slack on Failure
+        if: needs.build-and-test.result == 'failure' # 이 step은 job이 실패한 경우에만 실행됩니다.
+        id: slack-failure
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_COLOR: '#ff0000'
+          SLACK_USERNAME: Github CI
+          SLACK_ICON: https://github.com/github.png
+          SLACK_TITLE: Message
+          SLACK_MESSAGE: |
+            브랜치 CI 테스트가 실패했습니다. :boom:
+            ${{ github.event_name == 'pull_request' && format('PR 제목: {0}', github.event.pull_request.title) || '' }}
+        
+
+  dependency-submission:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
+      # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0

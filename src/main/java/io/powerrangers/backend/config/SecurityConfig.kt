@@ -57,6 +57,7 @@ class SecurityConfig(
                             "/search.html",
                             "/follow-list.html",
                             "/actuator/prometheus" // prometheus metric 데이터 수집할 수 있도록 허용
+                            "/api/notifications/subscribe"
                         )
                             .permitAll()
                         .anyRequest()

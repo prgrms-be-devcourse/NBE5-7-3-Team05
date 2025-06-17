@@ -19,7 +19,8 @@ class FollowServiceTests {
 
     val followRepository = mockk<FollowRepository>()
     val userRepository = mockk<UserRepository>()
-    val followService = FollowService(followRepository, userRepository)
+    val notificationService = mockk<NotificationService>()
+    val followService = FollowService(followRepository, userRepository,notificationService)
 
     private val size = 5
     private val me = genUserWithId(1L, "me", "me@gmail.com")
@@ -45,8 +46,9 @@ class FollowServiceTests {
         every { followRepository.existsByFollowerAndFollowing(me, user) } returns false
 
         val newFollow = Follow(id = 1L, follower = me, following = user)
-
         every { followRepository.save(any()) } returns newFollow
+
+        every { notificationService.send(any()) } just Runs
 
         val expectedFollow = followService.follow(followReq)
 
@@ -54,6 +56,7 @@ class FollowServiceTests {
         expectedFollow.followingId shouldBe user.id
 
         verify(exactly = 1) { followRepository.save(any()) }
+        verify(exactly = 1) { notificationService.send(any()) }
     }
 
     @Test

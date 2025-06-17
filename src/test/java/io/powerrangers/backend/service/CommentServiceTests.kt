@@ -25,8 +25,9 @@ class CommentServiceTests {
     val commentRepository = mockk<CommentRepository>()
     val userRepository = mockk<UserRepository>()
     val taskRepository = mockk<TaskRepository>()
+    val notificationService = mockk<NotificationService>()
 
-    val commentService = CommentService(commentRepository, taskRepository, userRepository)
+    val commentService = CommentService(commentRepository, taskRepository, userRepository, notificationService)
 
     val testUser = User(
         id = 1L,
