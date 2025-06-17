@@ -3,7 +3,7 @@ package io.powerrangers.backend.dao
 import io.powerrangers.backend.entity.RefreshToken
 import io.powerrangers.backend.entity.RefreshTokenBlackList
 import io.powerrangers.backend.entity.User
-import java.util.*
+import java.time.LocalDateTime
 
 interface TokenRepository {
     fun save(user: User, refreshToken: String)
@@ -11,4 +11,5 @@ interface TokenRepository {
     fun addBlackList(refreshToken: RefreshToken): RefreshTokenBlackList
     fun findValidRefreshToken(userId: Long): RefreshToken?
     fun findAllRefreshTokensByUserId(userId: Long): List<RefreshToken>
+    fun cleanUpOldToken(dateTime: LocalDateTime)
 }

@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class FollowService(
     private val followRepository: FollowRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificationService: NotificationService
 ) {
 
     @Transactional
@@ -39,7 +40,15 @@ class FollowService(
         } catch (e: DataIntegrityViolationException) {
             throw CustomException(ErrorCode.ALREADY_FOLLOWED)
         }
-
+        //자기자신 팔로우 아닐경우
+        if(follower.id != following.id) {
+            val notification = Notification(
+                receiverId = following.id!!,
+                type = NotificationType.FOLLOW,
+                content = "${follower.nickname}님이 당신을 팔로우했습니다."
+            )
+            notificationService.send(notification)
+        }
         return FollowResponseDto(
             followId = saved.id!!,
             followerId = saved.follower.id!!,

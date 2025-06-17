@@ -3,10 +3,7 @@ package io.powerrangers.backend.service
 import io.powerrangers.backend.dao.CommentRepository
 import io.powerrangers.backend.dao.TaskRepository
 import io.powerrangers.backend.dao.UserRepository
-import io.powerrangers.backend.dto.CommentCreateRequestDto
-import io.powerrangers.backend.dto.CommentResponseDto
-import io.powerrangers.backend.dto.CommentUpdateRequestDto
-import io.powerrangers.backend.dto.CommentUpdateResponseDto
+import io.powerrangers.backend.dto.*
 import io.powerrangers.backend.entity.Comment
 import io.powerrangers.backend.exception.CustomException
 import io.powerrangers.backend.exception.ErrorCode
@@ -22,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 class CommentService (
     private val commentRepository: CommentRepository,
     private val taskRepository: TaskRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificationService: NotificationService
 ) {
 
     @Transactional
@@ -46,6 +44,25 @@ class CommentService (
             content=request.content
         )
         commentRepository.save(comment)
+
+        val receiverId = when {
+            // 1. 대댓글이면 원 댓글 작성자
+            parent != null -> parent.user.id
+            // 2. 일반 댓글이면 글 작성자
+            task.user.id != user.id -> task.user.id
+            // 3. 글 쓴 사람이 자기 글에 자기 댓글 쓴 경우 → 알림 없음
+            else -> null
+        }
+
+        receiverId?.let {
+            val notification = Notification(
+                receiverId = it,
+                type = NotificationType.COMMENT,
+                content = "${user.nickname}님이 댓글을 남겼습니다."
+            )
+            notificationService.send(notification)
+        }
+
         return comment.toResponseDto()
     }
 
