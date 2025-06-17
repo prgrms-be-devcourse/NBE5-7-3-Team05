@@ -46,8 +46,9 @@ class FollowServiceTests {
         every { followRepository.existsByFollowerAndFollowing(me, user) } returns false
 
         val newFollow = Follow(id = 1L, follower = me, following = user)
-
         every { followRepository.save(any()) } returns newFollow
+
+        every { notificationService.send(any()) } just Runs
 
         val expectedFollow = followService.follow(followReq)
 
@@ -55,6 +56,7 @@ class FollowServiceTests {
         expectedFollow.followingId shouldBe user.id
 
         verify(exactly = 1) { followRepository.save(any()) }
+        verify(exactly = 1) { notificationService.send(any()) }
     }
 
     @Test
