@@ -9,6 +9,7 @@ import io.powerrangers.backend.entity.User
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Repository
 class RefreshTokenRepositoryAdapter (
@@ -21,7 +22,8 @@ class RefreshTokenRepositoryAdapter (
     override fun save(user: User, refreshToken: String) {
         val token = RefreshToken(
             user = user,
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
+            createdAt = LocalDateTime.now()
         )
         refreshTokenRepository.save(token)
     }
@@ -34,7 +36,8 @@ class RefreshTokenRepositoryAdapter (
     @Transactional
     override fun addBlackList(refreshToken: RefreshToken): RefreshTokenBlackList {
         val blackList = RefreshTokenBlackList(
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
+            createdAt = LocalDateTime.now()
         )
         return refreshTokenBlackListRepository.save(blackList)
     }
@@ -55,11 +58,17 @@ class RefreshTokenRepositoryAdapter (
             .orElse(null)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun findAllRefreshTokensByUserId(userId: Long): List<RefreshToken> {
         val jpql = "SELECT rt FROM RefreshToken rt WHERE rt.user.id = :userId"
         return entityManager.createQuery(jpql, RefreshToken::class.java)
             .setParameter("userId", userId)
             .resultList
+    }
+
+    @Transactional
+    override fun cleanUpOldToken(dateTime: LocalDateTime) {
+        refreshTokenBlackListRepository.deleteByCreatedAtBefore(dateTime)
+        refreshTokenRepository.deleteByCreatedAtBefore(dateTime)
     }
 }
