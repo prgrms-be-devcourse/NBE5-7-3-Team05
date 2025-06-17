@@ -9,6 +9,7 @@ import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.entity.RefreshToken
 import io.powerrangers.backend.entity.RefreshTokenBlackList
 import io.powerrangers.backend.entity.User
+import io.powerrangers.backend.service.targetUserId
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.junit.jupiter.api.BeforeEach
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
+import org.springframework.test.util.ReflectionTestUtils
 import java.time.LocalDateTime
 
 @DataJpaTest
@@ -68,8 +70,7 @@ class RefreshTokenRepositoryAdapterTests {
 
         val refreshToken = RefreshToken(
             user = user,
-            refreshToken = "bad-token",
-            createdAt = LocalDateTime.now()
+            refreshToken = "bad-token"
         )
 
         refreshTokenRepository.save(refreshToken)
@@ -90,8 +91,8 @@ class RefreshTokenRepositoryAdapterTests {
         val user = genUser()
         em.persist(user)
 
-        val token1 = RefreshToken(user = user, refreshToken = "token-1", createdAt = LocalDateTime.now())
-        val token2 = RefreshToken(user = user, refreshToken = "token-2", createdAt = LocalDateTime.now())
+        val token1 = RefreshToken(user = user, refreshToken = "token-1")
+        val token2 = RefreshToken(user = user, refreshToken = "token-2")
         em.persist(token1)
         em.persist(token2)
 
@@ -108,8 +109,10 @@ class RefreshTokenRepositoryAdapterTests {
     fun `createdAt 기준으로 threshold 보다 오래된 refreshToken을 삭제할 수 있다`() {
         val user = genUser()
         val currentTime = LocalDateTime.now()
-        val invalid = RefreshToken(user = user, refreshToken = "invalid", createdAt = currentTime.minusDays(2))
-        val valid = RefreshToken(user = user, refreshToken = "valid", createdAt = currentTime)
+        val invalid = RefreshToken(user = user, refreshToken = "invalid")
+        val valid = RefreshToken(user = user, refreshToken = "valid")
+        ReflectionTestUtils.setField(invalid, "createdAt", currentTime.minusDays(2))
+        ReflectionTestUtils.setField(valid, "createdAt", currentTime)
         em.persist(user)
         em.persist(invalid)
         em.persist(valid)
@@ -117,7 +120,7 @@ class RefreshTokenRepositoryAdapterTests {
         em.flush()
         em.clear()
 
-        val count = refreshTokenRepository.deleteByCreatedAtBefore(currentTime.minusHours(1))
+        val count = refreshTokenRepository.deleteByCreatedAtBefore(currentTime)
 
         count shouldBe 1
     }
@@ -126,10 +129,14 @@ class RefreshTokenRepositoryAdapterTests {
     fun `createdAt 기준으로 threshold 보다 오래된 refreshTokenBlackList을 삭제할 수 있다`() {
         val user = genUser()
         val currentTime = LocalDateTime.now()
-        val dummyToken1 = RefreshToken(user = user, refreshToken = "dummy1", createdAt = currentTime)
-        val dummyToken2 = RefreshToken(user = user, refreshToken = "dummy2", createdAt = currentTime)
-        val invalid = RefreshTokenBlackList(refreshToken = dummyToken1, createdAt = currentTime.minusDays(2))
-        val valid = RefreshTokenBlackList(refreshToken = dummyToken2, createdAt = currentTime)
+        val dummyToken1 = RefreshToken(user = user, refreshToken = "dummy1")
+        val dummyToken2 = RefreshToken(user = user, refreshToken = "dummy2")
+        val invalid = RefreshTokenBlackList(refreshToken = dummyToken1)
+        val valid = RefreshTokenBlackList(refreshToken = dummyToken2)
+
+        ReflectionTestUtils.setField(invalid, "createdAt", currentTime.minusDays(2))
+        ReflectionTestUtils.setField(valid, "createdAt", currentTime)
+
         em.persist(user)
         em.persist(dummyToken1)
         em.persist(dummyToken2)
@@ -139,7 +146,7 @@ class RefreshTokenRepositoryAdapterTests {
         em.flush()
         em.clear()
 
-        val count = refreshTokenBlackListRepository.deleteByCreatedAtBefore(currentTime.minusHours(1))
+        val count = refreshTokenBlackListRepository.deleteByCreatedAtBefore(currentTime)
 
         count shouldBe 1
     }
