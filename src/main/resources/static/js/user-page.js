@@ -1,4 +1,5 @@
 import {apiFetch} from "./token-reissue.js";
+import {attachGoToHomeHandler, attachLogoutHandler} from "./header.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const targetUserId = new URLSearchParams(window.location.search).get("userId");
@@ -247,27 +248,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    document.getElementById("goHomeBtn")?.addEventListener("click", () => {
-        window.location.href = `/index.html?userId=${localStorage.getItem("userId")}`;
-    });
+    attachGoToHomeHandler()
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        if (!confirm("정말 로그아웃하시겠습니까?")) return;
-
-        apiFetch("/users/logout", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-            .then(() => {
-                alert("성공적으로 로그아웃 되었습니다.");
-                localStorage.removeItem("userId");
-                window.location.replace("/loginPage");
-            })
-            .catch(err => {
-                console.error("로그아웃 실패", err);
-                alert("로그아웃 중 문제가 발생했습니다.");
-            });
-    });
+    attachLogoutHandler('logoutBtn', () => fetch("/users/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }));
 });

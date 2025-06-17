@@ -185,9 +185,6 @@ function dueDateToDate(dueDateStr) {
 function createTaskItem(task, targetUserId) {
     const existingUserId = localStorage.getItem("userId")
     const isMine = targetUserId === existingUserId;
-    console.log("targetUserId: ", targetUserId)
-    console.log("existingUserId: ", existingUserId)
-    console.log(isMine)
 
     const taskItem = document.createElement("div")
     taskItem.className = "task-item"
