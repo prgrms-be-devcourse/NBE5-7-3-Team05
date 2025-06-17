@@ -1,0 +1,27 @@
+version: "3"
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-dev-container
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    ports:
+      - "3305:3306"
+    networks:
+      - spring-network
+
+  app:
+    build: .
+    container_name: backend-app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    networks:
+      - spring-network
+
+networks:
+  spring-network:
