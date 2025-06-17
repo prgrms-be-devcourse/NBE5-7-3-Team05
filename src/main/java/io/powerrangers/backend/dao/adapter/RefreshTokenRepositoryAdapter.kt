@@ -22,8 +22,7 @@ class RefreshTokenRepositoryAdapter (
     override fun save(user: User, refreshToken: String) {
         val token = RefreshToken(
             user = user,
-            refreshToken = refreshToken,
-            createdAt = LocalDateTime.now()
+            refreshToken = refreshToken
         )
         refreshTokenRepository.save(token)
     }
@@ -36,8 +35,7 @@ class RefreshTokenRepositoryAdapter (
     @Transactional
     override fun addBlackList(refreshToken: RefreshToken): RefreshTokenBlackList {
         val blackList = RefreshTokenBlackList(
-            refreshToken = refreshToken,
-            createdAt = LocalDateTime.now()
+            refreshToken = refreshToken
         )
         return refreshTokenBlackListRepository.save(blackList)
     }

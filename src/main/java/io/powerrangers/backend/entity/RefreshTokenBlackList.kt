@@ -23,8 +23,8 @@ class RefreshTokenBlackList (
 
     @OneToOne
     var refreshToken: RefreshToken,
-
+) {
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    val createdAt: LocalDateTime
-)
+    var createdAt: LocalDateTime? = null
+}

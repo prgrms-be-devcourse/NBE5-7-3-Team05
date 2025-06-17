@@ -21,9 +21,9 @@ class RefreshToken (
     @JoinColumn(name = "user_id", nullable = true)
     var user: User?,
 
-    val refreshToken: String,
-
+    val refreshToken: String
+) {
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    val createdAt: LocalDateTime
-)
+    var createdAt: LocalDateTime? = null
+}
