@@ -55,7 +55,8 @@ class SecurityConfig(
                             "/images/**",
                             "/fonts/**",
                             "/search.html",
-                            "/follow-list.html"
+                            "/follow-list.html",
+                            "/api/notifications/subscribe"
                         )
                             .permitAll()
                         .anyRequest()

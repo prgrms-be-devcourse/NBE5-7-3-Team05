@@ -6,9 +6,43 @@ async function setUserIdFromServer() {
     try {
         const res = await apiFetch('/users/me');
         if (!res.ok) throw new Error("인증 필요");
+
         const response = await res.json();
-        localStorage.setItem("userId", response.data);
-        console.log("✅ userId 저장됨:", response.data);
+        const userId=response.data;
+
+        localStorage.setItem("userId", userId);
+        console.log("✅ userId 저장됨:", userId);
+
+        const eventSource = new EventSource(`/api/notifications/subscribe/${userId}`);
+        console.log(`✅ SSE 연결 시도 중: userId = ${userId}`);
+
+        eventSource.addEventListener("connect", (event) => {
+            console.log("✅ SSE 연결 성공:", event.data);
+        });
+
+        eventSource.addEventListener("notification", (event) => {
+            const data = JSON.parse(event.data);
+            console.log("🔔 알림 도착:", data);
+            Toastify({
+                text: `📬 ${data.content}`,
+                duration: 4000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #6366F1, #3B82F6)", // gradient
+                style: {
+                    fontSize: "15px",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                },
+                close: true
+            }).showToast();
+        });
+
+
+        eventSource.onerror = (e) => {
+            console.error("❌ SSE 연결 오류:", e);
+            eventSource.close();
+        };
     } catch (e) {
         console.error("로그인 필요:", e);
         alert("로그인이 필요합니다.");
