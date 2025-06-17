@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
+import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
+@ActiveProfiles("test")
 internal class BackendApplicationTests {
 
     @Mock
