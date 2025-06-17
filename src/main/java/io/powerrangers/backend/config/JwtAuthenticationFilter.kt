@@ -111,5 +111,6 @@ private val WHITE_LIST = mutableListOf(
     "/.well-known/appspecific/com.chrome.devtools.json",  // 크롬에서 날라오는 백엔드용 요청..?
     "/loginPage",
     "/images/**",
-    "/fonts/**"
+    "/fonts/**",
+    "/actuator/prometheus"
 )
