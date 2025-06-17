@@ -19,7 +19,8 @@ class FollowServiceTests {
 
     val followRepository = mockk<FollowRepository>()
     val userRepository = mockk<UserRepository>()
-    val followService = FollowService(followRepository, userRepository)
+    val notificationService = mockk<NotificationService>()
+    val followService = FollowService(followRepository, userRepository,notificationService)
 
     private val size = 5
     private val me = genUserWithId(1L, "me", "me@gmail.com")
