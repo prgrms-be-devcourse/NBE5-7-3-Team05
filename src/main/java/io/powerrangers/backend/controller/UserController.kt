@@ -30,18 +30,18 @@ class UserController(
         @PathVariable userId: Long,
         @RequestPart(value = "image", required = false) image: MultipartFile?,
         @RequestPart(value = "dto") request: UserUpdateProfileRequestDto
-    ): ResponseEntity<BaseResponse<Void>> {
+    ): ResponseEntity<BaseResponse.Success<Nothing>> {
         userService.updateUserProfile(userId, request, image)
         return BaseResponse.success(HttpStatus.OK)
     }
 
     @GetMapping("/{userId}")
-    fun getUserProfile(@PathVariable userId: Long): ResponseEntity<BaseResponse<UserGetProfileResponseDto>> {
+    fun getUserProfile(@PathVariable userId: Long): ResponseEntity<BaseResponse.Success<UserGetProfileResponseDto>> {
         return BaseResponse.success(HttpStatus.OK, userService.getUserProfile(userId))
     }
 
     @GetMapping
-    fun searchUserProfile(@RequestParam nickname: String): ResponseEntity<BaseResponse<List<UserGetProfileResponseDto>>> {
+    fun searchUserProfile(@RequestParam nickname: String): ResponseEntity<BaseResponse.Success<List<UserGetProfileResponseDto>>> {
         return BaseResponse.success(
             HttpStatus.OK,
             userService.searchUserProfile(nickname)
@@ -49,7 +49,7 @@ class UserController(
     }
 
     @DeleteMapping("/{userId}")
-    fun cancelAccount(@PathVariable userId: Long): ResponseEntity<BaseResponse<Void>> {
+    fun cancelAccount(@PathVariable userId: Long): ResponseEntity<BaseResponse.Success<Nothing>> {
         userService.cancelAccount(userId)
         return BaseResponse.success(HttpStatus.NO_CONTENT)
     }
@@ -58,7 +58,7 @@ class UserController(
     fun getUserTasks(
         @PathVariable userId: Long,
         @RequestParam date: LocalDate
-    ): ResponseEntity<BaseResponse<List<TaskResponseDto>>> {
+    ): ResponseEntity<BaseResponse.Success<List<TaskResponseDto>>> {
         return BaseResponse.success(
             HttpStatus.OK,
             userService.getTasksByUser(userId, date)
@@ -66,7 +66,7 @@ class UserController(
     }
 
     @PostMapping("/logout")
-    fun logoutUser(): ResponseEntity<Void> {
+    fun logoutUser(): ResponseEntity<Nothing> {
         userService.logout()
         val deleteAccessCookie = deleteAccessCookie()
         val deleteRefreshCookie = deleteRefreshCookie()
@@ -74,7 +74,7 @@ class UserController(
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString())
             .header(HttpHeaders.SET_COOKIE, deleteRefreshCookie.toString())
-            .build<Void>()
+            .build<Nothing>()
     }
 
     @PostMapping("/reissue")
@@ -89,7 +89,7 @@ class UserController(
     }
 
     @GetMapping("/me")
-    fun getMyId(): ResponseEntity<BaseResponse<Long>> {
+    fun getMyId(): ResponseEntity<BaseResponse.Success<Long>> {
         val userId = getCurrentUserId()
         return BaseResponse.success(HttpStatus.OK, userId)
     }

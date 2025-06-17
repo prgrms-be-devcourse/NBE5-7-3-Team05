@@ -14,24 +14,24 @@ import java.io.IOException
 private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
-class GlobalExceptionHandler {
+open class GlobalExceptionHandler {
     @ExceptionHandler(CustomException::class)
-    protected fun handleCustomException(e: CustomException): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleCustomException(e: CustomException): ResponseEntity<BaseResponse.Error<Nothing>> {
         return BaseResponse.error(e.errorCode.message, e.errorCode.status)
     }
 
     @ExceptionHandler(AuthTokenException::class)
-    protected fun handleAuthTokenException(e: AuthTokenException): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleAuthTokenException(e: AuthTokenException): ResponseEntity<BaseResponse.Error<Nothing>> {
         return BaseResponse.error(e.errorCode.message, e.errorCode.status)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    protected fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<BaseResponse.Error<Nothing>> {
         val fieldErrors = e.bindingResult.fieldErrors
 
-        val errorMessage = fieldErrors.map {
+        val errorMessage = fieldErrors.joinToString(", ") {
             "${it.field} : ${it.defaultMessage}"
-        }.joinToString(", ")
+        }
 
         val errorCode = ErrorCode.INVALID_REQUEST
 
@@ -39,30 +39,30 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    protected fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException?): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException?): ResponseEntity<BaseResponse.Error<Nothing>> {
         return BaseResponse.error(ErrorCode.INVALID_REQUEST.message, ErrorCode.INVALID_REQUEST.status)
     }
 
     @ExceptionHandler(MissingServletRequestParameterException::class)
-    protected fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException?): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException?): ResponseEntity<BaseResponse.Error<Nothing>> {
         return BaseResponse.error(ErrorCode.INVALID_REQUEST.message, ErrorCode.INVALID_REQUEST.status)
     }
 
     @ExceptionHandler(MissingRequestCookieException::class)
-    protected fun handleMissingRequestCookieException(e: MissingRequestCookieException): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleMissingRequestCookieException(e: MissingRequestCookieException): ResponseEntity<BaseResponse.Error<Nothing>> {
         log.warn { "[인증 실패] 토큰 쿠키가 존재하지 않음. 원인: ${e.message}" }
         return BaseResponse.error(ErrorCode.UNAUTHORIZED.message, ErrorCode.UNAUTHORIZED.status)
     }
 
     @ExceptionHandler(IOException::class)
-    protected fun handleIOException(e: IOException): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleIOException(e: IOException): ResponseEntity<BaseResponse.Error<Nothing>> {
         val errorCode = ErrorCode.INTERNAL_SERVER_ERROR
         log.error(e) { "Unhandled I/O Exception occurred: ${e.message}" }
         return BaseResponse.error(errorCode.message, errorCode.status)
     }
 
     @ExceptionHandler(Exception::class)
-    protected fun handleException(e: Exception): ResponseEntity<BaseResponse<Void>> {
+    protected fun handleException(e: Exception): ResponseEntity<BaseResponse.Error<Nothing>> {
         val errorCode = ErrorCode.INTERNAL_SERVER_ERROR
         log.error(e) { "Unhandled Exception occurred: ${e.message}" }
         return BaseResponse.error(errorCode.message, errorCode.status)
