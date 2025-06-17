@@ -78,7 +78,8 @@
 <script th:inline="javascript">
   const userId = /*[[${userId}]]*/ 1;
 </script>
-<script src="/js/updateMypage.js"></script>
+
+<script type='module' src="/js/updateMypage.js"></script>
 <script type="module">
   import { setupNotification } from '/js/notification.js';
   setupNotification();

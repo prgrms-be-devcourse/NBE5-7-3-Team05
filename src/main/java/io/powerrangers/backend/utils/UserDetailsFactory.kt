@@ -29,7 +29,7 @@ fun genUserDetails(oAuth2User: OAuth2User, providerId: String): UserDetails {
                 nickname = properties["nickname"].toString(),
                 email = attributes["id"].toString() + "@kakao.com",
                 providerId = attributes["id"].toString(),
-                profileImage = attributes["profile_image"].toString(),
+                profileImage = properties["profile_image"].toString(),
                 oauthAttributes = attributes
             )
         }
