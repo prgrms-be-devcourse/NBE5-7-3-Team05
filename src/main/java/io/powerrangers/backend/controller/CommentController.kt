@@ -17,13 +17,13 @@ class CommentController (
     private val commentService: CommentService
 ){
     @PostMapping
-    fun createComment(@RequestBody @Valid request: CommentCreateRequestDto): ResponseEntity<BaseResponse<CommentResponseDto>> {
+    fun createComment(@RequestBody @Valid request: CommentCreateRequestDto): ResponseEntity<BaseResponse.Success<CommentResponseDto>> {
         val response = commentService.createComment(request)
         return BaseResponse.success(HttpStatus.OK, response)
     }
 
     @GetMapping("/{taskId}")
-    fun getComments(@PathVariable taskId: Long): ResponseEntity<BaseResponse<List<CommentResponseDto>>> {
+    fun getComments(@PathVariable taskId: Long): ResponseEntity<BaseResponse.Success<List<CommentResponseDto>>> {
         val comments = commentService.getComments(taskId)
         return BaseResponse.success(HttpStatus.OK, comments)
     }
@@ -32,13 +32,13 @@ class CommentController (
     fun updateComment(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: CommentUpdateRequestDto
-    ): ResponseEntity<BaseResponse<CommentUpdateResponseDto>> {
+    ): ResponseEntity<BaseResponse.Success<CommentUpdateResponseDto>> {
         val response = commentService.updateComment(commentId, request)
         return BaseResponse.success(HttpStatus.OK, response)
     }
 
     @DeleteMapping("/{commentId}")
-    fun deleteComment(@PathVariable commentId: Long): ResponseEntity<BaseResponse<Void>> {
+    fun deleteComment(@PathVariable commentId: Long): ResponseEntity<BaseResponse.Success<Nothing>> {
         commentService.deleteComment(commentId)
         return BaseResponse.success(HttpStatus.NO_CONTENT)
     }
