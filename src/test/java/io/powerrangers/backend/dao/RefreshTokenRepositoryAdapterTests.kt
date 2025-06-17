@@ -9,7 +9,6 @@ import io.powerrangers.backend.dto.Role
 import io.powerrangers.backend.entity.RefreshToken
 import io.powerrangers.backend.entity.RefreshTokenBlackList
 import io.powerrangers.backend.entity.User
-import io.powerrangers.backend.service.targetUserId
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
-import org.springframework.test.util.ReflectionTestUtils
 import java.time.LocalDateTime
 
 @DataJpaTest
@@ -111,8 +109,7 @@ class RefreshTokenRepositoryAdapterTests {
         val currentTime = LocalDateTime.now()
         val invalid = RefreshToken(user = user, refreshToken = "invalid")
         val valid = RefreshToken(user = user, refreshToken = "valid")
-        ReflectionTestUtils.setField(invalid, "createdAt", currentTime.minusDays(2))
-        ReflectionTestUtils.setField(valid, "createdAt", currentTime)
+
         em.persist(user)
         em.persist(invalid)
         em.persist(valid)
@@ -120,7 +117,15 @@ class RefreshTokenRepositoryAdapterTests {
         em.flush()
         em.clear()
 
-        val count = refreshTokenRepository.deleteByCreatedAtBefore(currentTime)
+        em.createQuery("update RefreshToken r set r.createdAt=:t where r.refreshToken='invalid'")
+            .setParameter("t", currentTime.minusDays(2))
+            .executeUpdate()
+        em.createQuery("update RefreshToken r set r.createdAt=:t where r.refreshToken='valid'")
+            .setParameter("t", currentTime)
+            .executeUpdate()
+
+        em.clear()
+        val count = refreshTokenRepository.deleteByCreatedAtBefore(currentTime.minusHours(1))
 
         count shouldBe 1
     }
@@ -134,19 +139,25 @@ class RefreshTokenRepositoryAdapterTests {
         val invalid = RefreshTokenBlackList(refreshToken = dummyToken1)
         val valid = RefreshTokenBlackList(refreshToken = dummyToken2)
 
-        ReflectionTestUtils.setField(invalid, "createdAt", currentTime.minusDays(2))
-        ReflectionTestUtils.setField(valid, "createdAt", currentTime)
-
         em.persist(user)
         em.persist(dummyToken1)
         em.persist(dummyToken2)
-        em.persist(invalid)
+        em.persist(invalid);
         em.persist(valid)
 
         em.flush()
         em.clear()
 
-        val count = refreshTokenBlackListRepository.deleteByCreatedAtBefore(currentTime)
+        em.createQuery("update RefreshTokenBlackList b set b.createdAt = :t where b.refreshToken.refreshToken = 'dummy1'")
+            .setParameter("t", currentTime.minusDays(2))
+            .executeUpdate()
+
+        em.createQuery("update RefreshTokenBlackList b set b.createdAt = :t where b.refreshToken.refreshToken = 'dummy2'")
+            .setParameter("t", currentTime)
+            .executeUpdate()
+
+        em.clear()
+        val count = refreshTokenBlackListRepository.deleteByCreatedAtBefore(currentTime.minusHours(1))
 
         count shouldBe 1
     }
