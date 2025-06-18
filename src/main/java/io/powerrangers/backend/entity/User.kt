@@ -31,7 +31,7 @@ class User (
     ) val providerId: String,
 
     @field:Column(
-        length = 20,
+        length = 40,
         unique = true
     ) val email: String,
 

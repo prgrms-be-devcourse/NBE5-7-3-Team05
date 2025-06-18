@@ -33,6 +33,11 @@ jobs:
           APP_YML: ${{ secrets.APPLICATION_YML }}
         run : echo "$APP_YML" | base64 --decode > src/main/resources/application.yml
 
+      - name: Inject application-test.yml
+        env:
+          APP_TEST_YML: ${{ secrets.APPLICATION_TEST_YML }}
+        run: echo "$APP_TEST_YML" | base64 --decode > src/main/resources/application-test.yml
+
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
 
@@ -58,9 +63,6 @@ jobs:
           # SPRING_PROFILE: ${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}
         # run: ./gradlew build -x test -Dspring.profiles.active=$SPRING_PROFILE
         run: ./gradlew build -x test
-
-      - name: Clean build
-        run: ./gradlew clean
 
       - name: Unit Test, Slice Test
         run: ./gradlew test -Dspring.profiles.active=test
