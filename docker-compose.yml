@@ -8,6 +8,7 @@ services:
       MYSQL_DATABASE: "${MYSQL_DATABASE}"
       MYSQL_USER: "${MYSQL_USER}"
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      TZ: Asia/Seoul
     ports:
       - "3305:3306"
     networks:
@@ -16,6 +17,8 @@ services:
   redis:
     image: redis:7
     container_name: redis-dev-container
+    environment:
+      TZ: Asia/Seoul
     ports:
       - "6379:6379"
     networks:
@@ -27,8 +30,28 @@ services:
     depends_on:
       - db
       - redis
+    environment:
+      TZ: Asia/Seoul
     ports:
       - "8080:8080"
+    networks:
+      - spring-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - spring-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
     networks:
       - spring-network
 

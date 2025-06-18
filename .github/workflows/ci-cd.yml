@@ -38,6 +38,11 @@ jobs:
           APP_TEST_YML: ${{ secrets.APPLICATION_TEST_YML }}
         run: echo "$APP_TEST_YML" | base64 --decode > src/main/resources/application-test.yml
 
+      - name: Inject prometheus.yml
+        env:
+          PROM_YML: ${{ secrets.PROMETHEUS_YML }}
+        run: echo "$PROM_YML" | base64 --decode > ./prometheus.yml
+
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
 
@@ -149,8 +154,8 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-    if : github.ref == 'refs/heads/develop' || github.base_ref == 'develop'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    # if : github.ref == 'refs/heads/develop' || github.base_ref == 'develop'
     steps:
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.5
