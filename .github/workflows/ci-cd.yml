@@ -36,8 +36,10 @@ jobs:
       # 환경별 application-{profile}.yml 주입 (PR이면 local, 아니면 deploy)
       - name: Inject profile-specific yml
         env:
-          APP_YML_PROFILE: ${{ github.event_name == 'pull_request' && secrets.APPLICATION_LOCAL_YML || secrets.APPLICATION_DEPLOY_YML }}
-        run: echo "$APP_YML_PROFILE" | base64 --decode > src/main/resources/application-${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}.yml
+          # APP_YML_PROFILE: ${{ github.event_name == 'pull_request' && secrets.APPLICATION_LOCAL_YML || secrets.APPLICATION_DEPLOY_YML }}
+          APP_YML_PROFILE: ${{ secrets.APPLICATION_DEPLOY_YML }}
+        # run: echo "$APP_YML_PROFILE" | base64 --decode > src/main/resources/application-${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}.yml
+        run: echo "$APP_YML_PROFILE" | base64 --decode > src/main/resources/application-deploy.yml
 
       - name: Create test resources directory
         run: mkdir -p src/test/resources
@@ -69,8 +71,9 @@ jobs:
 
       - name: Set SPRING_PROFILE env
         env:
-          SPRING_PROFILE: ${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}
-        run: ./gradlew build -x test -Dspring.profiles.active=$SPRING_PROFILE
+          # SPRING_PROFILE: ${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}
+        # run: ./gradlew build -x test -Dspring.profiles.active=$SPRING_PROFILE
+        run: ./gradlew build -x test -Dspring.profiles.active=deploy
 
       - name: Unit Test, Slice Test
         run: ./gradlew test -Dspring.profiles.active=test
