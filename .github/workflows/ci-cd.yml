@@ -154,7 +154,8 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    # if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if : github.ref == 'refs/heads/develop' || github.base_ref == 'develop'
     steps:
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.5
