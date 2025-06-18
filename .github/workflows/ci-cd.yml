@@ -39,6 +39,11 @@ jobs:
           APP_YML_PROFILE: ${{ github.event_name == 'pull_request' && secrets.APPLICATION_LOCAL_YML || secrets.APPLICATION_DEPLOY_YML }}
         run: echo "$APP_YML_PROFILE" | base64 --decode > src/main/resources/application-${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}.yml
 
+      - name: Inject test.yml
+        env:
+          APP_YML_TEST: ${{ secrets.APPLICATION_TEST_YML }}
+        run : echo "$APP_YML_TEST" | base64 --decode > src/test/resources/application-test.yml
+
       # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
 
