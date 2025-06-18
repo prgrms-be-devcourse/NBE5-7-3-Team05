@@ -70,7 +70,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Set SPRING_PROFILE env
-        env:
+        #env:
           # SPRING_PROFILE: ${{ github.event_name == 'pull_request' && 'local' || 'deploy' }}
         # run: ./gradlew build -x test -Dspring.profiles.active=$SPRING_PROFILE
         run: ./gradlew build -x test -Dspring.profiles.active=deploy
