@@ -167,13 +167,6 @@ jobs:
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            if [ ! -d ~/backend ]; then
-              git clone https://github.com/prgrms-be-devcourse/NBE5-7-3-Team05.git ~/backend
-            else
-              cd ~/backend
-              git pull origin develop
-            fi
-            cd ~/backend
             sudo docker-compose down
             sudo docker-compose pull
-            sudo docker-compose up -d --build
+            sudo docker-compose up -d

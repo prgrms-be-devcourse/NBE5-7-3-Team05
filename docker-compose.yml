@@ -14,7 +14,7 @@ services:
       - spring-network
 
   app:
-    build: .
+    image: eunjoolee/todolist:latest
     container_name: backend-app
     depends_on:
       - db
