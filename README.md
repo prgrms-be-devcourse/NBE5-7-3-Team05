@@ -88,7 +88,3 @@ frontend/
 ERD
 ![스크린샷 2025-06-18 003213](https://github.com/user-attachments/assets/0a5ed366-1f2a-4dec-8c93-fd7c9c06e5d8)
 
-
-API 명세서: 
-
-배포 주소: 
